@@ -35,7 +35,10 @@ class CambAI(object):
         response: requests.Response = self.session.get(url)
         return response.json()
 
-    # def get_all_voices()
+    def get_all_voices(self) -> list[dict]:
+        url: str = self.create_api_endpoint("list_voices")
+        response: requests.Response = self.session.get(url)
+        return response.json()
 
 
 def run_test():
@@ -43,5 +46,6 @@ def run_test():
     load_dotenv()
     camb = CambAI()
 
-    source_languages = camb.get_languages("source")
-    print(source_languages)
+    # source_languages = camb.get_languages("source")
+    voices = camb.get_all_voices()
+    print(voices)

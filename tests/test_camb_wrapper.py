@@ -27,3 +27,10 @@ def test_get_target_languages():
     assert sorted(target_languages[0].keys(), key=len, reverse=False) == ["id", "language", "short_name"]
     assert target_languages[0]["language"] == "english (united states)"
     assert target_languages[2]["language"] == "amharic (ethiopia)"
+
+def test_no_voices():
+    api_key = os.getenv("CAMB_API_KEY")
+    camb_instance = CambAI(api_key=api_key)
+    voices = camb_instance.get_all_voices()
+
+    assert voices == []
