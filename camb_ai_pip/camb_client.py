@@ -3,9 +3,9 @@ import requests
 import json
 from urllib.parse import urljoin
 from camb_ai_pip import APIKeyMissingError
-from typing import Optional, Literal
+from typing import Optional, Literal, TypeAlias
 
-LanguageTypes = Literal["source", "target"]
+LanguageTypes: TypeAlias = Literal["source", "target"]
 
 class CambAI(object):
     def __init__(
