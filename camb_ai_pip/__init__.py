@@ -56,7 +56,7 @@ class CambAI(object):
         return self.CAMB_URL + endpoint
 
 
-    def get_languages(self, type: Literal["source", "target"], get_languages: bool = False) -> list[dict | str]:
+    def get_languages(self, type: Literal["source", "target"], get_languages: bool = False) -> list[dict]:
         url: str = self.create_api_endpoint(f"{type}_languages")
         response: requests.Response = self.session.get(url)
 
