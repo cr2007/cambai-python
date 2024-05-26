@@ -12,6 +12,18 @@ class APIError(Exception):
     """Exception raised when an API error occurs. \n
     Mostly when a non-200 status code is returned."""
 
+class LanguageType(TypedDict):
+    """
+    A TypedDict representing a language type.
+
+    Attributes:
+        id (int): The unique identifier for the language.
+        language (str): The full name of the language.
+        short_name (str): The abbreviated name of the language.
+    """
+    id: int
+    language: str
+    short_name: str
 
 class DubbingTaskStatus(TypedDict):
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
@@ -56,7 +68,8 @@ class CambAI(object):
         return self.CAMB_URL + endpoint
 
 
-    def get_languages(self, type: Literal["source", "target"], get_languages: bool = False) -> list[dict]:
+    def get_languages(self, type: Literal["source", "target"],
+                      get_languages: bool = False) -> list[LanguageType]:
         url: str = self.create_api_endpoint(f"{type}_languages")
         response: requests.Response = self.session.get(url)
 
