@@ -25,7 +25,21 @@ class LanguageOptionsDict(TypedDict):
     language: str
     short_name: str
 
+
 class DubbingTaskStatus(TypedDict):
+    """
+    A TypedDict representing the status of a dubbing task.
+
+    Attributes:
+        - status (Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]):
+            The status of the dubbing task. It can be one of the following:
+            - "SUCCESS": The task completed successfully.\n
+            - "PENDING": The task is still in progress.\n
+            - "TIMEOUT": The task timed out before completion.\n
+            - "ERROR": An error occurred during the task.\n
+            - "PAYMENT_REQUIRED": Payment is required to complete the task.\n
+        - run_id (Optional[int]): The unique identifier for the task run. It can be None if the task has not started yet.
+    """
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
     run_id: Optional[int]
 
