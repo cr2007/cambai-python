@@ -113,7 +113,7 @@ class CambAI(object):
 
 
     def get_languages(self, type: Literal["source", "target"],
-                      get_languages: bool = False) -> list[LanguageOptionsDict]:
+                      write_to_file: bool = False) -> list[LanguageOptionsDict]:
         """
         Retrieves a list of languages from the API endpoint based on the type specified.
 
@@ -136,6 +136,11 @@ class CambAI(object):
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
+
+        if write_to_file:
+            with open(f"{type}_languages.json", "w") as f:
+                f.write(response.text)
+            print(f"{type} languages written to {type}_languages.json")
 
         # Return the response data as a list of language dictionaries
         return response.json()
