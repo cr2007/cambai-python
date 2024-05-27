@@ -12,14 +12,14 @@ class APIError(Exception):
     """Exception raised when an API error occurs. \n
     Mostly when a non-200 status code is returned."""
 
-class LanguageType(TypedDict):
+class LanguageOptionsDict(TypedDict):
     """
-    A TypedDict representing a language type.
+    Represents a dictionary containing language options.
 
     Attributes:
-        id (int): The unique identifier for the language.
-        language (str): The full name of the language.
-        short_name (str): The abbreviated name of the language.
+        id (int): The ID of the language option.
+        language (str): The name of the language.
+        short_name (str): The short name of the language.
     """
     id: int
     language: str
@@ -69,7 +69,7 @@ class CambAI(object):
 
 
     def get_languages(self, type: Literal["source", "target"],
-                      get_languages: bool = False) -> list[LanguageType]:
+                      get_languages: bool = False) -> list[LanguageOptionsDict]:
         url: str = self.create_api_endpoint(f"{type}_languages")
         response: requests.Response = self.session.get(url)
 
