@@ -2,6 +2,7 @@ import os
 import requests
 from time import sleep
 from typing import Optional, Literal, TypedDict
+from enum import IntEnum
 
 class APIKeyMissingError(Exception):
     """Exception raised when the API Key is missing."""
@@ -25,7 +26,7 @@ class LanguageOptionsDict(TypedDict):
     short_name: str
 
 
-class DubbingTaskStatus(TypedDict):
+class TaskStatus(TypedDict):
     """
     A TypedDict representing the status of a dubbing task.
 
@@ -53,6 +54,13 @@ class DubbedRunInfo(TypedDict):
     """
     video_url: str
     audio_url: str
+
+
+class Gender(IntEnum):
+    NOT_KNOWN = 0
+    MALE = 1
+    FEMALE = 2
+    NOT_APPLICABLE = 9
 
 # --------------------------------------------------------------------------------------------------
 
@@ -171,7 +179,8 @@ class CambAI(object):
         # Return the response data as a list of voice dictionaries
         return response.json()
 
-    # ---------- Dub Example ---------- #
+    # ---------- Dubbing ---------- #
+
     def start_dubbing(self, *, video_url: str, source_language: int = 1,
                       target_language: int) -> dict:
         """
@@ -205,10 +214,7 @@ class CambAI(object):
         }
 
         # Send a POST request to the API endpoint with the prepared data
-        response = self.session.post(
-            url=url,
-            json=data
-        )
+        response = self.session.post(url=url, json=data)
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
@@ -217,7 +223,7 @@ class CambAI(object):
         return response.json()
 
 
-    def get_dubbing_task_status(self, task_id: str) -> DubbingTaskStatus:
+    def get_dubbing_task_status(self, task_id: str) -> TaskStatus:
         """
         Retrieves the status of a specific dubbing task.
 
@@ -304,7 +310,7 @@ class CambAI(object):
             None.
         """
         # Initialize variables for the dubbing task status and task ID
-        task: DubbingTaskStatus
+        task: TaskStatus
         task_id: str
 
         print("Starting Dubbing")
@@ -347,3 +353,57 @@ class CambAI(object):
 
         # Return the dubbed run information
         return self.get_dubbed_run_info(task["run_id"])
+
+    # ---------- TTS ---------- #
+
+    def create_tts(self, *, text: str, voice_id: int, language: int, gender: Gender, age: Optional[int] = None):
+
+        if not isinstance(gender, Gender):
+            raise TypeError("Gender must be an instance of Gender Enum\nMake sure you have imported the 'Gender' Enum")
+
+        if 1 <= language <= 148:
+            raise ValueError("Language ID must be between 1 and 148")
+
+        url: str = self.create_api_endpoint("tts")
+
+        data: dict = {
+            "text": text,
+            "voice_id": voice_id,
+            "language": language,
+            "gender": gender.value,
+            "age": age
+        }
+
+        self.session.headers["Content-Type"] = "application/json"
+
+        response = self.session.post(url=url, json=data)
+
+        response.raise_for_status()
+
+        return response.json()
+
+
+    def get_tts_status(self, task_id: str) -> TaskStatus:
+        url: str = self.create_api_endpoint(f"tts/{task_id}")
+
+        response = self.session.get(url)
+
+        response.raise_for_status()
+
+        return response.json()
+
+
+    def get_tts_result(self, run_id: int, write_to_file: bool = False) -> str:
+        url: str = self.create_api_endpoint(f"tts_result/{run_id}")
+
+        response = self.session.get(url, stream=True)
+
+        response.raise_for_status()
+
+        if write_to_file:
+            with open(f"tts_stream_{run_id}.wav", "wb") as f:
+                for chunk in response.iter_content(chunk_size=1024):
+                    f.write(chunk)
+            print(f"TTS audio written to tts_stream_{run_id}.wav")
+
+        return f"Download URL: {response.content.decode("utf-8")}"
