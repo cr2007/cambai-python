@@ -11,7 +11,7 @@ This is a Python wrapper for the CambAI API. It is designed to make it easy to i
 > [!WARNING]
 > `pip install` has not been setup just yet. Will be updated once ready
 
-~~To install the CambAI API Wrapper, you can use `pip` to install: ~~
+~~To install the CambAI API Wrapper, you can use `pip` to install:~~
 
 ```bash
 pip install camb-ai-pip
