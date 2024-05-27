@@ -55,6 +55,7 @@ class DubbedRunInfo(TypedDict):
     video_url: str
     audio_url: str
 
+# --------------------------------------------------------------------------------------------------
 
 class CambAI(object):
     def __init__(
@@ -101,8 +102,7 @@ class CambAI(object):
 
         return response.json()
 
-
-    ### Dub Example ####
+    # ---------- Dub Example ---------- #
 
     def get_dubbing_task_status(self, task_id: str) -> DubbingTaskStatus:
         url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
