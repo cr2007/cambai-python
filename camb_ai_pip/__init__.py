@@ -104,24 +104,6 @@ class CambAI(object):
 
     # ---------- Dub Example ---------- #
 
-    def get_dubbing_task_status(self, task_id: str) -> DubbingTaskStatus:
-        url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
-
-        response = self.session.get(url)
-        response.raise_for_status()
-
-        return response.json()
-
-
-    def get_dubbed_run_info(self, run_id: int) -> DubbedRunInfo:
-        url: str = self.create_api_endpoint(f"dubbed_run_info/{run_id}")
-
-        response = self.session.get(url)
-        response.raise_for_status()
-
-        return response.json()
-
-
     def start_dubbing(self, *, video_url: str, source_language: int = 1,
                       target_language: int) -> dict:
         url: str = self.create_api_endpoint("end_to_end_dubbing")
@@ -138,6 +120,24 @@ class CambAI(object):
             json=data
         )
 
+        response.raise_for_status()
+
+        return response.json()
+
+
+    def get_dubbing_task_status(self, task_id: str) -> DubbingTaskStatus:
+        url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
+
+        response = self.session.get(url)
+        response.raise_for_status()
+
+        return response.json()
+
+
+    def get_dubbed_run_info(self, run_id: int) -> DubbedRunInfo:
+        url: str = self.create_api_endpoint(f"dubbed_run_info/{run_id}")
+
+        response = self.session.get(url)
         response.raise_for_status()
 
         return response.json()
