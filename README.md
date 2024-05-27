@@ -16,3 +16,11 @@ This is a Python wrapper for the CambAI API. It is designed to make it easy to i
 ```bash
 pip install camb-ai-pip
 ```
+
+# To Do
+
+- [X] Dubbing
+- [X] Get Source/Target Langauges
+- [X] Get Dubbing Status
+- [X] Get Dubbed Run Details
+- [ ] TTS
