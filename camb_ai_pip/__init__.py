@@ -71,7 +71,9 @@ class CambAI(object):
     def get_languages(self, type: Literal["source", "target"],
                       get_languages: bool = False) -> list[LanguageOptionsDict]:
         url: str = self.create_api_endpoint(f"{type}_languages")
+
         response: requests.Response = self.session.get(url)
+        response.raise_for_status()
 
         return response.json()
 
@@ -79,7 +81,10 @@ class CambAI(object):
     def get_all_voices(self) -> list[dict]:
         """Get all voices available in Camb AI."""
         url: str = self.create_api_endpoint("list_voices")
+
         response: requests.Response = self.session.get(url)
+        response.raise_for_status()
+
         return response.json()
 
 
@@ -87,13 +92,19 @@ class CambAI(object):
 
     def get_dubbing_task_status(self, task_id: str) -> DubbingTaskStatus:
         url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
+
         response = self.session.get(url)
+        response.raise_for_status()
+
         return response.json()
 
 
     def get_dubbed_run_info(self, run_id: int) -> DubbedRunInfo:
         url: str = self.create_api_endpoint(f"dubbed_run_info/{run_id}")
+
         response = self.session.get(url)
+        response.raise_for_status()
+
         return response.json()
 
 
@@ -108,14 +119,14 @@ class CambAI(object):
             "target_language": target_language
         }
 
-        response = self.session.post(url, json=data)
+        response = self.session.post(
+            url=url,
+            json=data
+        )
 
-        if response.status_code == 200:
-            print("Poo Poo Response 200")
-            return response.json()
-        else:
-            print("Big L")
-            raise APIError(response.json())
+        response.raise_for_status()
+
+        return response.json()
 
 
     def dub(self, *, video_url: str, source_language: int = 1, target_language: int,
