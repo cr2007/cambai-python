@@ -356,16 +356,39 @@ class CambAI(object):
 
     # ---------- TTS ---------- #
 
-    def create_tts(self, *, text: str, voice_id: int, language: int, gender: Gender, age: Optional[int] = None):
+    def create_tts(self, *, text: str, voice_id: int, language: int, gender: Gender,
+                   age: Optional[int] = None):
+        """
+        Create a text-to-speech (TTS) request.
 
+        Args:
+            text (str): The text to be converted to speech.
+            voice_id (int): The ID of the voice to be used.
+            language (int): The ID of the language to be used.
+            gender (Gender): The gender of the voice. Must be an instance of the Gender Enum.
+            age (Optional[int]): The age of the voice. If not provided, a default value will be used.
+
+        Raises:
+            TypeError: If the gender is not an instance of the Gender Enum.
+            ValueError: If the language ID is not between 1 and 148.
+
+        Returns:
+            dict: The JSON response from the TTS API.
+        """
+
+        # Check if the gender is an instance of the Gender Enum
         if not isinstance(gender, Gender):
-            raise TypeError("Gender must be an instance of Gender Enum\nMake sure you have imported the 'Gender' Enum")
+            raise TypeError("Gender must be an instance of Gender Enum.\n",
+                            "Make sure you have imported the 'Gender' Enum")
 
+        # Check if the language ID is within the valid range
         if 1 <= language <= 148:
             raise ValueError("Language ID must be between 1 and 148")
 
+        # Create the API endpoint URL
         url: str = self.create_api_endpoint("tts")
 
+        # Prepare the data to be sent in the request
         data: dict = {
             "text": text,
             "voice_id": voice_id,
@@ -374,36 +397,80 @@ class CambAI(object):
             "age": age
         }
 
+        # Set the Content-Type header to 'application/json'
         self.session.headers["Content-Type"] = "application/json"
 
+        # Send the POST request to the API
         response = self.session.post(url=url, json=data)
 
+        # Raise an exception if the request was unsuccessful
         response.raise_for_status()
 
+        # Return the JSON response from the API
         return response.json()
 
 
     def get_tts_status(self, task_id: str) -> TaskStatus:
+        """
+        Get the status of a text-to-speech (TTS) task.
+
+        Args:
+            task_id (str): The ID of the TTS task.
+
+        Raises:
+            HTTPError: If the GET request to the TTS API fails.
+
+        Returns:
+            TaskStatus: The status of the TTS task.
+        """
+
+        # Create the API endpoint URL using the provided task ID
         url: str = self.create_api_endpoint(f"tts/{task_id}")
 
+        # Send the GET request to the API
         response = self.session.get(url)
 
+        # Raise an exception if the request was unsuccessful
         response.raise_for_status()
 
+        # Return the JSON response from the API, which includes the task status
         return response.json()
 
 
     def get_tts_result(self, run_id: int, write_to_file: bool = False) -> str:
+        """
+        Get the result of a text-to-speech (TTS) task.
+
+        Args:
+            run_id (int): The ID of the TTS task.
+            write_to_file (bool, optional): If True, the TTS result will be written to a .wav file. Defaults to False.
+
+        Raises:
+            HTTPError: If the GET request to the TTS API fails.
+
+        Returns:
+            str: The download URL of the TTS result.
+        """
+
+        # Create the API endpoint URL using the provided task ID
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
 
+        # Send the GET request to the API
         response = self.session.get(url, stream=True)
 
+        # Raise an exception if the request was unsuccessful
         response.raise_for_status()
 
+        # If write_to_file is True, write the TTS result to a .wav file
         if write_to_file:
+            # Open the file in write-binary mode
             with open(f"tts_stream_{run_id}.wav", "wb") as f:
+                # Iterate over the response content in chunks of 1024 bytes
                 for chunk in response.iter_content(chunk_size=1024):
+                    # Write each chunk to the file
                     f.write(chunk)
+            # Print a message indicating that the TTS audio has been written to the file
             print(f"TTS audio written to tts_stream_{run_id}.wav")
 
-        return f"Download URL: {response.content.decode("utf-8")}"
+        # Return the download URL of the TTS result
+        return f"Download URL: {response.content.decode('utf-8')}"
