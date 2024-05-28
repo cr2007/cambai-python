@@ -23,4 +23,5 @@ pip install camb-ai-pip
 - [X] Get Source/Target Langauges
 - [X] Get Dubbing Status
 - [X] Get Dubbed Run Details
-- [ ] TTS
+- [X] TTS
+- [ ] Testing
