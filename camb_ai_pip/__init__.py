@@ -381,8 +381,8 @@ class CambAI(object):
             raise TypeError("Gender must be an instance of Gender Enum.\n",
                             "Make sure you have imported the 'Gender' Enum")
 
-        # Check if the language ID is within the valid range
-        if 1 <= language <= 148:
+        # Check if the language ID is not within the valid range
+        if not (1 <= language <= 148):
             raise ValueError("Language ID must be between 1 and 148")
 
         # Create the API endpoint URL
