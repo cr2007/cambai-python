@@ -437,30 +437,40 @@ class CambAI(object):
         return response.json()
 
 
-    def get_tts_result(self, run_id: int, output_directory: Optional[str] = None) -> str:
-        # Create the API endpoint URL using the provided task ID
+    def get_tts_result(self, run_id: int, output_directory: str = "audio") -> None:
+        """
+        This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
+        it as a .wav file.
+
+        Parameters:
+        - run_id (int): The ID of the run for which the TTS result is to be fetched.
+        - output_directory (str): The directory where the .wav file will be saved. Defaults to "audio"
+
+        Returns:
+        None
+        """
+
+        # Create the API endpoint URL using the provided run_id
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
 
-        # Send the GET request to the API
+        # Send a GET request to the API endpoint
         response = self.session.get(url, stream=True)
 
-        # Raise an exception if the request was unsuccessful
+        # Raise an HTTPError if one occurred
         response.raise_for_status()
 
-        # If write_to_file is True, write the TTS result to a .wav file
-        if output_directory:
-            # Write a file directory path for the TTS audio
-            if not os.path.exists(output_directory):
-                print("File directory does not exist. Creating directory...")
-                os.makedirs(output_directory)
+        # Create the output directory if it does not exist
+        if not os.path.exists(output_directory):
+            print("File directory does not exist. Creating directory...")
+            os.makedirs(output_directory)
 
-            # Open the file in write-binary mode
-            with open(f"{output_directory}/tts_stream_{run_id}.wav", "wb") as f:
-                # Iterate over the response content in chunks of 1024 bytes
-                for chunk in response.iter_content(chunk_size=1024):
-                    # Write each chunk to the file
-                    f.write(chunk)
-            # Print a message indicating that the TTS audio has been written to the file
+        # Open a .wav file in the output directory to write the TTS result
+        with open(f"{output_directory}/tts_stream_{run_id}.wav", "wb") as f:
+            # Write the response content to the .wav file in chunks of 1024 bytes
+            for chunk in response.iter_content(chunk_size=1024):
+                f.write(chunk)
+
+            # Print success message
             print(f"TTS audio written to tts_stream_{run_id}.wav")
 
         # Return the download URL of the TTS result
