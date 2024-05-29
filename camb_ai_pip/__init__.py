@@ -437,21 +437,7 @@ class CambAI(object):
         return response.json()
 
 
-    def get_tts_result(self, run_id: int, write_to_file: bool = False) -> str:
-        """
-        Get the result of a text-to-speech (TTS) task.
-
-        Args:
-            run_id (int): The ID of the TTS task.
-            write_to_file (bool, optional): If True, the TTS result will be written to a .wav file. Defaults to False.
-
-        Raises:
-            HTTPError: If the GET request to the TTS API fails.
-
-        Returns:
-            str: The download URL of the TTS result.
-        """
-
+    def get_tts_result(self, run_id: int, output_directory: Optional[str] = None) -> str:
         # Create the API endpoint URL using the provided task ID
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
 
@@ -462,9 +448,14 @@ class CambAI(object):
         response.raise_for_status()
 
         # If write_to_file is True, write the TTS result to a .wav file
-        if write_to_file:
+        if output_directory:
+            # Write a file directory path for the TTS audio
+            if not os.path.exists(output_directory):
+                print("File directory does not exist. Creating directory...")
+                os.makedirs(output_directory)
+
             # Open the file in write-binary mode
-            with open(f"tts_stream_{run_id}.wav", "wb") as f:
+            with open(f"{output_directory}/tts_stream_{run_id}.wav", "wb") as f:
                 # Iterate over the response content in chunks of 1024 bytes
                 for chunk in response.iter_content(chunk_size=1024):
                     # Write each chunk to the file
@@ -473,4 +464,4 @@ class CambAI(object):
             print(f"TTS audio written to tts_stream_{run_id}.wav")
 
         # Return the download URL of the TTS result
-        return f"Download URL: {response.content.decode('utf-8')}"
+        return response.content.decode('utf-8')
