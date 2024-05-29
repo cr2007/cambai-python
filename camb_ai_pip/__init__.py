@@ -283,7 +283,7 @@ class CambAI(object):
 
 
     def dub(self, *, video_url: str, source_language: int = 1, target_language: int,
-                polling_interval:int = 2, debug: bool = False):
+                polling_interval: float = 2, debug: bool = False):
         """
         Starts the dubbing process for a given video and periodically checks the status until it's
         done.
