@@ -3,6 +3,7 @@ import requests
 from time import sleep
 from typing import Optional, Literal, TypedDict
 from enum import IntEnum
+from rich import print
 
 class APIKeyMissingError(Exception):
     """Exception raised when the API Key is missing."""
@@ -473,5 +474,43 @@ class CambAI(object):
             # Print success message
             print(f"TTS audio written to tts_stream_{run_id}.wav")
 
-        # Return the download URL of the TTS result
-        return response.content.decode('utf-8')
+
+    def tts(self, *, text: str, voice_id, language: int, gender: Gender, age: Optional[int] = None,
+            polling_interval: float = 2, debug: bool = False,
+            output_directory: str = "audio") -> None:
+        task: TaskStatus
+        task_id: str
+
+        if debug:
+            print("Starting TTS process")
+
+        response = self.create_tts(text=text, voice_id=voice_id, language=language,
+                                   gender=gender, age=age)
+
+        print(f"TTS Task Started: {response}")
+
+        task_id = response["task_id"]
+
+        while True:
+            task = self.get_tts_status(task_id)
+
+            if debug:
+                print(f"TTS Status: {task['status']}, Run ID: {task['run_id']}")
+
+            if task["status"] == "SUCCESS":
+                break
+
+            if task["status"] not in ["SUCCESS", "PENDING"]:
+                raise APIError(f"Issue with TTS: {task['status']} for Run ID: {task['run_id']}")
+
+            if debug:
+                print(f"Sleeping for {polling_interval} seconds")
+
+            sleep(polling_interval)
+
+        task = self.get_dubbing_task_status(task_id)
+
+        if task["run_id"] is None:
+            raise APIError("Run ID is None")
+
+        self.get_tts_result(run_id=task["run_id"], output_directory=output_directory)
