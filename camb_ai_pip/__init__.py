@@ -442,6 +442,20 @@ class CambAI(object):
 
 
     def get_tts_result(self, run_id: int, output_directory: Optional[str]) -> None:
+        """
+        This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
+        it as a .wav file.
+
+        Parameters:
+        - `run_id` (int): The ID of the run for which the TTS result is to be fetched.
+        - `output_directory` (Optional[str]): The directory where the .wav file will be saved. If
+        `None`, defaults to "audio_tts".
+
+        Returns:
+        None
+        """
+
+        # Check if output_directory is None and set it to default if it is
         if output_directory is None:
             output_directory = "audio_tts"
 
@@ -454,9 +468,10 @@ class CambAI(object):
         # Raise an HTTPError if one occurred
         response.raise_for_status()
 
-        # Create the output directory if it does not exist
+        # Check if the output directory exists
         if not os.path.exists(output_directory):
             print("File directory does not exist. Creating directory...")
+            # Create the directory if it doesn't exist
             os.makedirs(output_directory)
 
         # Open a .wav file in the output directory to write the TTS result
@@ -472,39 +487,74 @@ class CambAI(object):
     def tts(self, *, text: str, voice_id, language: int, gender: Gender, age: Optional[int] = None,
             polling_interval: float = 2, debug: bool = False,
             output_directory: str = "audio_tts") -> None:
+        """
+        This method initiates a Text-to-Speech (TTS) process, monitors its status, and retrieves the
+        result when ready.
+
+        Parameters:
+        - text (str): The text to be converted to speech.
+        - voice_id: The ID of the voice to be used for the TTS.
+        - language (int): The language code for the TTS.
+        - gender (Gender): The gender of the voice for the TTS.
+        - age (Optional[int]): The age of the voice for the TTS. If None, no specific age is set.
+        - polling_interval (float): The interval (in seconds) at which the TTS status is checked.
+          Defaults to 2.
+        - debug (bool): If True, debug information is printed. Defaults to False.
+        - output_directory (str): The directory where the .wav file will be saved. If None, defaults
+          to "audio_tts".
+
+        Returns:
+        None
+        """
+
+        # Initialize task status and task ID
         task: TaskStatus
         task_id: str
 
+        # Print debug information if debug is True
         if debug:
             print("Starting TTS process")
 
+        # Create the TTS task
         response = self.create_tts(text=text, voice_id=voice_id, language=language,
                                    gender=gender, age=age)
 
+        # Print the response containing the task ID from the TTS task creation
         print(f"TTS Task Started: {response}")
 
+        # Extract the task ID from the response
         task_id = response["task_id"]
 
+        # Continuously check the status of the TTS task
         while True:
+            # Get the current status of the TTS task
             task = self.get_tts_status(task_id)
 
+            # Print debug information if debug is True
             if debug:
                 print(f"TTS Status: {task['status']}, Run ID: {task['run_id']}")
 
+            # Break the loop if the task status is "SUCCESS"
             if task["status"] == "SUCCESS":
                 break
 
+            # Raise an error if the task status is neither "SUCCESS" nor "PENDING"
             if task["status"] not in ["SUCCESS", "PENDING"]:
                 raise APIError(f"Issue with TTS: {task['status']} for Run ID: {task['run_id']}")
 
+            # Print debug information if debug is True
             if debug:
                 print(f"Sleeping for {polling_interval} seconds")
 
+            # Sleep for the specified polling interval
             sleep(polling_interval)
 
+        # Get the status of the dubbing task
         task = self.get_dubbing_task_status(task_id)
 
+        # Raise an error if the run ID is None
         if task["run_id"] is None:
             raise APIError("Run ID is None")
 
+        # Get the TTS result and save it to the specified output directory
         self.get_tts_result(run_id=task["run_id"], output_directory=output_directory)
