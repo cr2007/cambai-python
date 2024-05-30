@@ -163,3 +163,8 @@ cython_debug/
 
 # Visual Studio Code
 .vscode/
+
+# Camb AI output files
+*.wav
+audio_tts/
+audio/
