@@ -284,7 +284,7 @@ class CambAI(object):
 
 
     def dub(self, *, video_url: str, source_language: int = 1, target_language: int,
-                polling_interval: float = 2, debug: bool = False):
+                polling_interval: float = 2, debug: bool = False) -> DubbedRunInfo:
         """
         Starts the dubbing process for a given video and periodically checks the status until it's
         done.
@@ -343,6 +343,9 @@ class CambAI(object):
                 raise APIError(f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}")
 
             # Wait for the specified polling interval before the next status check
+            if debug:
+                print(f"Sleeping for {polling_interval} seconds")
+
             sleep(polling_interval)
 
         # Get the final status of the dubbing task
