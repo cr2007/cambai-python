@@ -438,18 +438,9 @@ class CambAI(object):
         return response.json()
 
 
-    def get_tts_result(self, run_id: int, output_directory: str = "audio") -> None:
-        """
-        This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
-        it as a .wav file.
-
-        Parameters:
-        - run_id (int): The ID of the run for which the TTS result is to be fetched.
-        - output_directory (str): The directory where the .wav file will be saved. Defaults to "audio"
-
-        Returns:
-        None
-        """
+    def get_tts_result(self, run_id: int, output_directory: Optional[str]) -> None:
+        if output_directory is None:
+            output_directory = "audio_tts"
 
         # Create the API endpoint URL using the provided run_id
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
@@ -477,7 +468,7 @@ class CambAI(object):
 
     def tts(self, *, text: str, voice_id, language: int, gender: Gender, age: Optional[int] = None,
             polling_interval: float = 2, debug: bool = False,
-            output_directory: str = "audio") -> None:
+            output_directory: str = "audio_tts") -> None:
         task: TaskStatus
         task_id: str
 
