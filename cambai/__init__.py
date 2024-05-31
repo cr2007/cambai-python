@@ -34,11 +34,11 @@ class TaskStatus(TypedDict):
     Attributes:
         - status (Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]):
             The status of the dubbing task. It can be one of the following:
-            - "SUCCESS": The task completed successfully.\n
-            - "PENDING": The task is still in progress.\n
-            - "TIMEOUT": The task timed out before completion.\n
-            - "ERROR": An error occurred during the task.\n
-            - "PAYMENT_REQUIRED": Payment is required to complete the task.\n
+            - "SUCCESS": The task completed successfully.
+            - "PENDING": The task is still in progress.
+            - "TIMEOUT": The task timed out before completion.
+            - "ERROR": An error occurred during the task.
+            - "PAYMENT_REQUIRED": Payment is required to complete the task.
         - run_id (Optional[int]): The unique identifier for the task run. It can be None if the task has not started yet.
     """
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
@@ -58,6 +58,15 @@ class DubbedRunInfo(TypedDict):
 
 
 class Gender(IntEnum):
+    """
+    This Enum class represents the gender categories.
+
+    Attributes:
+    - NOT_KNOWN (int): Gender is not known.
+    - MALE (int): Male gender.
+    - FEMALE (int): Female gender.
+    - NOT_APPLICABLE (int): Gender is not applicable.
+    """
     NOT_KNOWN = 0
     MALE = 1
     FEMALE = 2
@@ -154,6 +163,7 @@ class CambAI(object):
         # Return the response data as a list of language dictionaries
         return response.json()
 
+    # ---------- Voices ---------- #
 
     def get_all_voices(self) -> list[dict]:
         """
@@ -484,8 +494,8 @@ class CambAI(object):
             print(f"TTS audio written to tts_stream_{run_id}.wav")
 
 
-    def tts(self, *, text: str, voice_id, language: int, gender: Gender, age: Optional[int] = None,
-            polling_interval: float = 2, debug: bool = False,
+    def tts(self, *, text: str, voice_id, language: int, gender: Gender,
+            age: Optional[int] = None, polling_interval: float = 2, debug: bool = False,
             output_directory: str = "audio_tts") -> None:
         """
         This method initiates a Text-to-Speech (TTS) process, monitors its status, and retrieves the
@@ -517,7 +527,7 @@ class CambAI(object):
 
         # Create the TTS task
         response = self.create_tts(text=text, voice_id=voice_id, language=language,
-                                   gender=gender, age=age)
+                                    gender=gender, age=age)
 
         # Print the response containing the task ID from the TTS task creation
         print(f"TTS Task Started: {response}")
