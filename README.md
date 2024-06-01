@@ -74,3 +74,37 @@ TTS Status: SUCCESS, Run ID: 11768
 File directory does not exist. Creating directory...
 TTS audio written to tts_stream_11768.wav
 ```
+
+### Dubbing
+
+```python
+from cambai import CambAI
+from dotenv import load_dotenv
+from rich import print
+
+load_dotenv()
+
+def main():
+    print("Starting...")
+    client = CambAI()
+
+    ## Dubbing example
+
+    # You can get the list of source and target languages by calling the 'get_languages' method
+    client.get_languages("source", write_to_file=True)
+
+    print("Sending URL")
+    values = client.dub(
+        video_url="", # Insert any public accessible URL here (e.g. YouTube, Vimeo, etc.)
+        source_language=1,  # English (United States)
+        target_language=76, # French (France)
+        debug=True,         # Set to False to not view the debug print statements
+        polling_interval=10 # Set the interval to check the status of the dubbing task
+    )
+
+    print(f"Output Video URL: {values["video_url"]}")
+    print(f"Output Audio URL: {values["audio_url"]}")
+
+if __name__ == "__main__":
+    main()
+```
