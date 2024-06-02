@@ -165,7 +165,7 @@ class CambAI(object):
 
     # ---------- Voices ---------- #
 
-    def get_all_voices(self) -> list[dict]:
+    def get_all_voices(self, write_to_file: bool = False) -> list[dict]:
         """
         Retrieves a list of all voices available in Camb AI.
 
@@ -186,6 +186,12 @@ class CambAI(object):
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
+
+        # Write the response to a file if write_to_file is True
+        if write_to_file:
+            with open("voices.json", "w") as f:
+                f.write(response.text)
+            print("Voices written to voices.json")
 
         # Return the response data as a list of voice dictionaries
         return response.json()
