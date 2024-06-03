@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "camb-ai-pip"
-version = "0.1.0"
-description = ""
+name = "cambai"
+version = "0.0.1"
+description = "Camb AI API Python Library"
 authors = ["Chandrashekhar R <hi.cskhere@gmail.com>"]
 readme = "README.md"
+repository = "https://github.com/cr2007/cambai"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.32.2"
-vcrpy = "^6.0.1"
 pytest = "^8.2.1"
 python-dotenv = "^1.0.1"
 pydantic = "^2.7.1"
@@ -17,6 +17,3 @@ rich = "^13.7.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-camb-ai-pip = "camb_ai_pip.camb_client:run_test"
