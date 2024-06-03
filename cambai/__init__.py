@@ -16,6 +16,7 @@ class APIError(Exception):
     """Exception raised when an API error occurs. \n
     Mostly when a non-200 status code is returned."""
 
+
 class LanguageOptionsDict(TypedDict):
     """
     Represents a dictionary containing language options.
@@ -28,6 +29,19 @@ class LanguageOptionsDict(TypedDict):
     id: int
     language: str
     short_name: str
+
+
+class VoicesListDict(TypedDict):
+    """
+    This class represents a dictionary that maps voice properties to their values.
+    It is a TypedDict which enforces a specific set of keys with values of specific types.
+
+    Attributes:
+        id (int): The unique identifier for a voice.
+        voice_name (str): The name of the voice.
+    """
+    id: int
+    voice_name: str
 
 
 class TaskStatus(TypedDict):
@@ -168,19 +182,21 @@ class CambAI(object):
 
     # ---------- Voices ---------- #
 
-    def get_all_voices(self, write_to_file: bool = False) -> list[dict]:
+    def get_all_voices(self, write_to_file: bool = False) -> list[Optional[VoicesListDict]]:
         """
-        Retrieves a list of all voices available in Camb AI.
+        This method sends a GET request to the API endpoint to retrieve all voices.
+        If write_to_file is True, it writes the response to a JSON file.
 
-        This method sends a GET request to the "list_voices" endpoint of the Camb AI API.
-        If the request is successful, it returns a list of dictionaries, each representing a voice.
+        Args:
+            write_to_file (bool): If True, writes the response to a JSON file. Defaults to False.
 
         Returns:
-            list[dict]: A list of dictionaries, each representing a voice.
+            list[Optional[VoicesListDict]]: A list of dictionaries representing voices.
 
         Raises:
             HTTPError: If the GET request to the API endpoint fails.
         """
+
         # Construct the API endpoint URL for listing voices
         url: str = self.create_api_endpoint("list_voices")
 
