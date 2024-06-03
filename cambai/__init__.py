@@ -496,13 +496,14 @@ class CambAI(object):
             os.makedirs(output_directory)
 
         # Open a .wav file in the output directory to write the TTS result
-        with open(f"{output_directory}/tts_stream_{run_id}.wav", "wb") as f:
+        file_path: str = f"{output_directory}/tts_stream_{run_id}.wav"
+        with open(file_path, "wb") as f:
             # Write the response content to the .wav file in chunks of 1024 bytes
             for chunk in response.iter_content(chunk_size=1024):
                 f.write(chunk)
 
             # Print success message
-            print(f"TTS audio written to tts_stream_{run_id}.wav")
+            print(f"TTS audio written to {file_path}")
 
 
     def tts(self, *, text: str, voice_id, language: int, gender: Gender,
