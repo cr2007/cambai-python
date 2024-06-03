@@ -506,7 +506,7 @@ class CambAI(object):
             print(f"\nTTS audio written to '{file_path}'")
 
 
-    def tts(self, *, text: str, voice_id, language: int, gender: Gender,
+    def tts(self, *, text: str, voice_id: int, language: int, gender: Gender,
             age: Optional[int] = None, polling_interval: float = 2, debug: bool = False,
             output_directory: str = "audio_tts") -> None:
         """
