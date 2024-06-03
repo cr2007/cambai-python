@@ -1,9 +1,11 @@
 import os
+import math
 import requests
 from time import sleep
 from typing import Optional, Literal, TypedDict
 from enum import IntEnum
 from rich import print
+from tqdm import tqdm
 
 class APIKeyMissingError(Exception):
     """Exception raised when the API Key is missing."""
@@ -362,7 +364,9 @@ class CambAI(object):
             if debug:
                 print(f"Sleeping for {polling_interval} seconds")
 
-            sleep(polling_interval)
+            for _ in tqdm(range(math.ceil(polling_interval)), unit="s",
+                          desc=f"Waiting {polling_interval} seconds before checking status again"):
+                sleep(1)
 
         # Get the final status of the dubbing task
         task = self.get_dubbing_task_status(task_id)
@@ -558,12 +562,13 @@ class CambAI(object):
             if task["status"] not in ["SUCCESS", "PENDING"]:
                 raise APIError(f"Issue with TTS: {task['status']} for Run ID: {task['run_id']}")
 
-            # Print debug information if debug is True
+            # Wait for the specified polling interval before the next status check
             if debug:
                 print(f"Sleeping for {polling_interval} seconds")
 
-            # Sleep for the specified polling interval
-            sleep(polling_interval)
+            for _ in tqdm(range(math.ceil(polling_interval)), unit="s",
+                          desc=f"Waiting {polling_interval} seconds before checking status again"):
+                sleep(1)
 
         # Get the status of the dubbing task
         task = self.get_dubbing_task_status(task_id)
