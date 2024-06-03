@@ -190,9 +190,11 @@ class CambAI(object):
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
 
-        # Write the response to a file if write_to_file is True
+        # If write_to_file is True, write the response to a JSON file
         if write_to_file:
+            # Open the file in write mode
             with open("voices.json", "w") as f:
+                # Dump the JSON response into the file with indentation for readability
                 json.dump(response.json(), f, indent=4)
             print("Voices written to voices.json")
 
