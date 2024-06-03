@@ -503,7 +503,7 @@ class CambAI(object):
                 f.write(chunk)
 
             # Print success message
-            print(f"TTS audio written to {file_path}")
+            print(f"\nTTS audio written to '{file_path}'")
 
 
     def tts(self, *, text: str, voice_id, language: int, gender: Gender,
@@ -535,14 +535,14 @@ class CambAI(object):
 
         # Print debug information if debug is True
         if debug:
-            print("Starting TTS process")
+            print("Starting TTS process\n")
 
         # Create the TTS task
         response = self.create_tts(text=text, voice_id=voice_id, language=language,
                                     gender=gender, age=age)
 
         # Print the response containing the task ID from the TTS task creation
-        print(f"TTS Task Started: {response}")
+        print(f"TTS Task Started: {response}\n")
 
         # Extract the task ID from the response
         task_id = response["task_id"]
