@@ -1,5 +1,6 @@
 import os
 import math
+import json
 import requests
 from time import sleep
 from typing import Optional, Literal, TypedDict
@@ -159,7 +160,7 @@ class CambAI(object):
 
         if write_to_file:
             with open(f"{type}_languages.json", "w") as f:
-                f.write(response.text)
+                json.dump(response.json(), f, indent=4)
             print(f"{type} languages written to {type}_languages.json")
 
         # Return the response data as a list of language dictionaries
@@ -192,7 +193,7 @@ class CambAI(object):
         # Write the response to a file if write_to_file is True
         if write_to_file:
             with open("voices.json", "w") as f:
-                f.write(response.text)
+                json.dump(response.json(), f, indent=4)
             print("Voices written to voices.json")
 
         # Return the response data as a list of voice dictionaries
