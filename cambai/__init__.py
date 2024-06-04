@@ -183,8 +183,8 @@ class CambAI:
         response.raise_for_status()
 
         if write_to_file:
-            with open(f"{language_type}_languages.json", "w", encoding="utf-8") as f:
-                json.dump(response.json(), f, indent=4)
+            with open(f"{language_type}_languages.json", "w", encoding="utf-8") as file:
+                json.dump(response.json(), file, indent=4)
             print(f"{language_type} languages written to {language_type}_languages.json")
 
         # Return the response data as a list of language dictionaries
@@ -219,9 +219,9 @@ class CambAI:
         # If write_to_file is True, write the response to a JSON file
         if write_to_file:
             # Open the file in write mode
-            with open("voices.json", "w", encoding="utf-8") as f:
+            with open("voices.json", "w", encoding="utf-8") as file:
                 # Dump the JSON response into the file with indentation for readability
-                json.dump(response.json(), f, indent=4)
+                json.dump(response.json(), file, indent=4)
             print("Voices written to voices.json")
 
         # Return the response data as a list of voice dictionaries
@@ -530,10 +530,10 @@ class CambAI:
 
         # Open a .wav file in the output directory to write the TTS result
         file_path: str = f"{output_directory}/tts_stream_{run_id}.wav"
-        with open(file_path, "wb") as f:
+        with open(file_path, "wb") as audio_file:
             # Write the response content to the .wav file in chunks of 1024 bytes
             for chunk in response.iter_content(chunk_size=1024):
-                f.write(chunk)
+                audio_file.write(chunk)
 
             # Print success message
             print(f"\nTTS audio written to '{file_path}'")
