@@ -92,7 +92,7 @@ class Gender(IntEnum):
 
 # --------------------------------------------------------------------------------------------------
 
-class CambAI(object):
+class CambAI:
     """
     A Python client for interacting with the Camb AI API.
 
@@ -431,7 +431,7 @@ class CambAI(object):
                             "Make sure you have imported the 'Gender' Enum")
 
         # Check if the language ID is not within the valid range
-        if not (1 <= language <= 148):
+        if not 1 <= language <= 148:
             raise ValueError("Language ID must be between 1 and 148")
 
         # Create the API endpoint URL
