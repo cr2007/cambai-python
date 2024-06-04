@@ -148,13 +148,13 @@ class CambAI:
         return self.CAMB_URL + endpoint
 
 
-    def get_languages(self, type: Literal["source", "target"],
+    def get_languages(self, language_type: Literal["source", "target"],
                       write_to_file: bool = False) -> list[LanguageOptionsDict]:
         """
         Retrieves a list of languages from the API endpoint based on the type specified.
 
         Args:
-            - type (Literal["source", "target"]): Specifies the type of languages to retrieve.
+            - language_type (Literal["source", "target"]): Specifies the type of languages to retrieve.
                 Can be either "source" for source languages or "target" for target languages.
             - get_languages (bool, optional): If True, retrieves the languages. Defaults to False.
 
@@ -165,7 +165,7 @@ class CambAI:
             HTTPError: If the GET request to the API endpoint fails.
         """
         # Construct the API endpoint URL
-        url: str = self.create_api_endpoint(f"{type}_languages")
+        url: str = self.create_api_endpoint(f"{language_type}_languages")
 
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
@@ -174,9 +174,9 @@ class CambAI:
         response.raise_for_status()
 
         if write_to_file:
-            with open(f"{type}_languages.json", "w") as f:
+            with open(f"{language_type}_languages.json", "w", encoding="utf-8") as f:
                 json.dump(response.json(), f, indent=4)
-            print(f"{type} languages written to {type}_languages.json")
+            print(f"{language_type} languages written to {language_type}_languages.json")
 
         # Return the response data as a list of language dictionaries
         return response.json()
@@ -210,7 +210,7 @@ class CambAI:
         # If write_to_file is True, write the response to a JSON file
         if write_to_file:
             # Open the file in write mode
-            with open("voices.json", "w") as f:
+            with open("voices.json", "w", encoding="utf-8") as f:
                 # Dump the JSON response into the file with indentation for readability
                 json.dump(response.json(), f, indent=4)
             print("Voices written to voices.json")
