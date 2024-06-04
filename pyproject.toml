@@ -15,6 +15,7 @@ pydantic = "^2.7.1"
 
 rich = "^13.7.1"
 tqdm = "^4.66.4"
+pylint = "^3.2.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
