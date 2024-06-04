@@ -438,7 +438,10 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-zero,
         redefined-builtin,
         missing-module-docstring,
-        too-many-arguments ; Need to be edited later on to remove this line
+        too-many-arguments, ; Need to be edited later on to remove this line
+        too-few-public-methods,
+        unrecognized-option,
+        unknown-option-value
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
