@@ -20,8 +20,8 @@ def main():
         polling_interval=30 # Set the interval to check the status of the dubbing task
     )
 
-    print(f"Output Video URL: {values["video_url"]}")
-    print(f"Output Audio URL: {values["audio_url"]}")
+    print(f"Output Video URL: {values['video_url']}")
+    print(f"Output Audio URL: {values['audio_url']}")
 
 if __name__ == "__main__":
     main()
