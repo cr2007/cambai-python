@@ -1,12 +1,20 @@
 import os
+import sys
 import math
 import json
 from time import sleep
-from typing import Optional, Literal, TypedDict
+from typing import Optional
 from enum import IntEnum
 import requests
 from rich import print
 from tqdm import tqdm
+
+if sys.version_info >= (3, 8):
+    # Python 3.8+ supports the built-in TypedDict and Literal types
+    from typing import Literal, TypedDict
+else:
+    from typing_extensions import Literal, TypedDict
+    from typing import List as list
 
 class APIKeyMissingError(Exception):
     """Exception raised when the API Key is missing."""
