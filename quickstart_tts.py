@@ -1,5 +1,5 @@
-from cambai import CambAI, Gender
 from dotenv import load_dotenv
+from cambai import CambAI, Gender
 
 load_dotenv()
 
