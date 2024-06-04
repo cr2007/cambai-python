@@ -154,7 +154,8 @@ class CambAI:
         Retrieves a list of languages from the API endpoint based on the type specified.
 
         Args:
-            - language_type (Literal["source", "target"]): Specifies the type of languages to retrieve.
+            - language_type (Literal["source", "target"]): Specifies the type of languages to
+                retrieve.
                 Can be either "source" for source languages or "target" for target languages.
             - get_languages (bool, optional): If True, retrieves the languages. Defaults to False.
 
