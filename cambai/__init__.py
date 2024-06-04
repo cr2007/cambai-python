@@ -56,7 +56,8 @@ class TaskStatus(TypedDict):
             - "TIMEOUT": The task timed out before completion.
             - "ERROR": An error occurred during the task.
             - "PAYMENT_REQUIRED": Payment is required to complete the task.
-        - run_id (Optional[int]): The unique identifier for the task run. It can be None if the task has not started yet.
+        - run_id (Optional[int]): The unique identifier for the task run. It can be None if the task
+          has not started yet.
     """
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
     run_id: Optional[int]
@@ -228,16 +229,18 @@ class CambAI(object):
         The request includes the video URL, source language, and target language as JSON data.
 
         Args:
-            video_url (str): The URL of the video to be dubbed.
-            source_language (int, optional): The ID of the source language. Defaults to 1 - English (US)
-            target_language (int): The ID of the target language.
+            - video_url (str): The URL of the video to be dubbed.
+            - source_language (int, optional): The ID of the source language.
+                                                Defaults to 1 - English (US)
+            - target_language (int): The ID of the target language.
 
         Returns:
-            dict: The response from the API as a dictionary.
+            - dict: The response from the API as a dictionary.
 
         Raises:
-            HTTPError: If the POST request to the API endpoint fails.
+            - HTTPError: If the POST request to the API endpoint fails.
         """
+
         # Construct the API endpoint URL for end-to-end dubbing
         url: str = self.create_api_endpoint("end_to_end_dubbing")
 
@@ -328,17 +331,19 @@ class CambAI(object):
 
         This method first sends a request to start the dubbing process. Then, it enters a loop where
         it periodically checks the status of the dubbing task. If the status is "SUCCESS", it breaks
-        the loop.
+        the loop.\n
         If the status is neither "SUCCESS" nor "PENDING", it raises an APIError. If the run ID is
         None after the task is successful, it raises an APIError.
 
         Args:
-            video_url (str): The URL of the video to be dubbed.
-            source_language (int, optional): The ID of the source language. Defaults to 1 - English (US)
-            target_language (int): The ID of the target language.
-            polling_interval (int, optional): The interval in seconds between each status check.
+            - video_url (str): The URL of the video to be dubbed.
+            - source_language (int, optional): The ID of the source language.
+                                                Defaults to 1 - English (US)
+            - target_language (int): The ID of the target language.
+            - polling_interval (int, optional): The interval in seconds between each status check.
             Defaults to 2 seconds.
-            debug (bool, optional): If True, prints the task status and run ID at each status check. Defaults to False.
+            - debug (bool, optional): If True, prints the task status and run ID at each status
+                                        check. Defaults to False.
 
         Returns:
             DubbedRunInfo: The dubbed run information as a dictionary.
@@ -347,6 +352,7 @@ class CambAI(object):
             APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
             None.
         """
+
         # Initialize variables for the dubbing task status and task ID
         task: TaskStatus
         task_id: str
@@ -409,7 +415,7 @@ class CambAI(object):
             voice_id (int): The ID of the voice to be used.
             language (int): The ID of the language to be used.
             gender (Gender): The gender of the voice. Must be an instance of the Gender Enum.
-            age (Optional[int]): The age of the voice. If not provided, a default value will be used.
+            age (Optional[int]): The age of the voice. If not provided, a default value will be used
 
         Raises:
             TypeError: If the gender is not an instance of the Gender Enum.
