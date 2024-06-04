@@ -1,10 +1,10 @@
 import os
 import math
 import json
-import requests
 from time import sleep
 from typing import Optional, Literal, TypedDict
 from enum import IntEnum
+import requests
 from rich import print
 from tqdm import tqdm
 
@@ -124,7 +124,7 @@ class CambAI:
             )
 
         # Set the base URL for the Camb AI API
-        self.CAMB_URL: str = "https://client.camb.ai/apis/"
+        self.camb_api_url: str = "https://client.camb.ai/apis/"
 
         # Create a new session for making requests
         self.session: requests.Session = requests.Session()
@@ -145,7 +145,7 @@ class CambAI:
         """
 
         # Append the provided endpoint to the base URL
-        return self.CAMB_URL + endpoint
+        return self.camb_api_url + endpoint
 
 
     def get_languages(self, language_type: Literal["source", "target"],
