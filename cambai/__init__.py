@@ -293,14 +293,19 @@ class CambAI:
             HTTPError: If the GET request to the API endpoint fails.
         """
 
+        # If 'task' is not one of the valid task types, raise a ValueError
+        if task not in ["tts", "dubbing", "transcription"]:
+            raise ValueError("Invalid task type. Must be one of 'dubbing', 'tts',"
+                             "or 'transcription'")
+
+        url: str = "" # Default value for 'url'
+
         if task == "dubbing":
             url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
         if task == "tts":
             url: str = self.create_api_endpoint(f"tts/{task_id}")
         if task == "transcription":
             url: str = self.create_api_endpoint(f"create_transcription/{task_id}")
-
-        # Construct the API endpoint URL for retrieving the status of a specific dubbing task
 
         # Send a GET request to the API endpoint
         response = self.session.get(url)
