@@ -611,8 +611,8 @@ class CambAI:
                           desc=f"Waiting {polling_interval} seconds before checking status again"):
                 sleep(1)
 
-        # Get the status of the dubbing task
-        task = self.get_dubbing_task_status(task_id)
+        # Get the status of the TTS task
+        task = self.get_task_status(task="tts", task_id=task_id)
 
         # Raise an error if the run ID is None
         if task["run_id"] is None:
