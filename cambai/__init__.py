@@ -278,34 +278,36 @@ class CambAI:
         task_id: str
         ) -> TaskStatus:
         """
-        Retrieves the status of a specific dubbing task.
+        Retrieves the status of a specific task.
 
-        This method sends a GET request to the "end_to_end_dubbing/{task_id}" endpoint of the Camb
-        AI API. The task_id is used to identify the specific dubbing task.
+        This method sends a GET request to the appropriate endpoint of the Camb
+        AI API based on the task type. The task_id is used to identify the specific task.
 
         Args:
-            task_id (str): The ID of the dubbing task.
+            - task (str): The type of the task. Must be one of 'dubbing', 'tts', or 'transcription'.
+            - task_id (str): The ID of the task.
 
         Returns:
-            DubbingTaskStatus: The status of the dubbing task as a dictionary.
+            - TaskStatus: The status of the task as a dictionary.
 
         Raises:
-            HTTPError: If the GET request to the API endpoint fails.
+            - ValueError: If the task type is not valid.
+            - HTTPError: If the GET request to the API endpoint fails.
         """
 
-        # If 'task' is not one of the valid task types, raise a ValueError
-        if task not in ["tts", "dubbing", "transcription"]:
-            raise ValueError("Invalid task type. Must be one of 'dubbing', 'tts',"
-                             "or 'transcription'")
+        # Initialize 'url' with an empty string
+        url: str = ""
 
-        url: str = "" # Default value for 'url'
-
+        # Determine the appropriate API endpoint based on the task type
         if task == "dubbing":
             url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
-        if task == "tts":
+        elif task == "tts":
             url: str = self.create_api_endpoint(f"tts/{task_id}")
-        if task == "transcription":
+        elif task == "transcription":
             url: str = self.create_api_endpoint(f"create_transcription/{task_id}")
+        else:
+            raise ValueError("Invalid task type. Must be one of 'dubbing', 'tts',"
+                             "or 'transcription'")
 
         # Send a GET request to the API endpoint
         response = self.session.get(url)
