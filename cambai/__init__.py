@@ -193,23 +193,52 @@ class CambAI:
 
     def create_custom_voice(self, *, voice_name: str, gender: Gender, age: int = 30,
                             file: str) -> dict[str, int]:
+        """
+        Creates a custom voice profile based on the provided parameters.
+
+        This method sends a request to a predefined API endpoint to create a custom voice profile.
+        It requires a voice name, gender (as an instance of a Gender Enum), and optionally an age
+        and a file path to an audio sample.
+
+        Parameters:
+        - voice_name (str): The name to assign to the custom voice.
+        - gender (Gender): The gender of the voice. Must be an instance of the Gender Enum.
+        - age (int, optional): The age of the voice. Defaults to 30.
+        - file (str): The file path to an audio sample for the custom voice.
+
+        Returns:
+        - dict[str, int]: A dictionary containing the response from the API.
+
+        Raises:
+        - TypeError: If the gender is not an instance of the Gender Enum.
+        - requests.HTTPError: If the response status code from the API is not 200.
+
+        Note:
+        - The 'file' parameter should be a valid path to an audio file.
+        - Ensure the 'Gender' Enum is imported before calling this method.
+        """
+
         # Check if the gender is an instance of the Gender Enum
         if not isinstance(gender, Gender):
             raise TypeError("Gender must be an instance of Gender Enum.\n",
                             "Make sure you have imported the 'Gender' Enum")
 
+        # Construct the API endpoint URL
         url: str = self.create_api_endpoint("create_custom_voice")
 
+        # Prepare the file to be uploaded
         files = {
             'file': open(file, 'rb')
         }
 
+        # Prepare the data payload with voice properties
         data = {
             "voice_name": voice_name,
             "gender": gender.value,
             "age": age
         }
 
+        # Send a POST request to the API with the file and data
         response: requests.Response = self.session.post(
             url=url,
             files=files,
@@ -219,6 +248,7 @@ class CambAI:
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
 
+        # Return the JSON response from the API
         return response.json()
 
 
