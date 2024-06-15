@@ -191,6 +191,37 @@ class CambAI:
 
     # ---------- Voices ---------- #
 
+    def create_custom_voice(self, *, voice_name: str, gender: Gender, age: int = 30,
+                            file: str) -> dict[str, int]:
+        # Check if the gender is an instance of the Gender Enum
+        if not isinstance(gender, Gender):
+            raise TypeError("Gender must be an instance of Gender Enum.\n",
+                            "Make sure you have imported the 'Gender' Enum")
+
+        url: str = self.create_api_endpoint("create_custom_voice")
+
+        files = {
+            'file': open(file, 'rb')
+        }
+
+        data = {
+            "voice_name": voice_name,
+            "gender": gender.value,
+            "age": age
+        }
+
+        response: requests.Response = self.session.post(
+            url=url,
+            files=files,
+            data=data
+        )
+
+        # If the status code is not 200, raise an HTTPError
+        response.raise_for_status()
+
+        return response.json()
+
+
     def get_all_voices(self, write_to_file: bool = False) -> list[Optional[VoicesListDict]]:
         """
         This method sends a GET request to the API endpoint to retrieve all voices.
