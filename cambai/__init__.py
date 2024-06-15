@@ -217,6 +217,12 @@ class CambAI:
 
         # If write_to_file is True, write the response to a JSON file
         if write_to_file:
+            # If the file already exists, remove it before writing the new data
+            if os.path.exists("voices.json"):
+                print("'voices.json' already exists.\n"
+                      "Removing the existing file...")
+                os.remove("voices.json")
+
             # Open the file in write mode
             with open("voices.json", "w", encoding="utf-8") as file:
                 # Dump the JSON response into the file with indentation for readability
