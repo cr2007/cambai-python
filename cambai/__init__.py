@@ -286,8 +286,10 @@ class CambAI:
         except FileNotFoundError:
             print("File not found."
                   "Please enter a valid file path containing an audio file to send to the API.")
+            return None
         except requests.exceptions.RequestException as e:
             print("There was an exception that occurred while handling your request.", e)
+            return None
 
 
     def get_all_voices(
