@@ -9,10 +9,9 @@ import requests
 from rich import print
 from tqdm import tqdm
 
-# Check the Python version at runtime
+# For Python < 3.9, use 'List' and 'Dict' from 'typing'
 if sys.version_info < (3, 9):
-    # For Python versions less than 3.9, import Literal and TypedDict from typing_extensions
-    from typing import List as list
+    from typing import List as list, Dict as dict
 
 
 class APIKeyMissingError(Exception):
