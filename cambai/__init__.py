@@ -14,6 +14,8 @@ if sys.version_info < (3, 9):
     from typing import List as list, Dict as dict
 
 
+# ---------- Error Classes ---------- #
+
 class APIKeyMissingError(Exception):
     """Exception raised when the API Key is missing."""
 
@@ -22,6 +24,33 @@ class APIError(Exception):
     """Exception raised when an API error occurs. \n
     Mostly when a non-200 status code is returned."""
 
+# ---------- TypedDict for Error Handling ---------- #
+
+class ErrorDetail(TypedDict):
+    """
+    Represents the structure of an error detail in a response.
+
+    Attributes:
+        loc (list[str]): A list of location strings indicating where the error occurred.
+        msg (str): The error message.
+        type (str): The type of error.
+    """
+    loc: list[str]
+    msg: str
+    type: str
+
+
+class ErrorResponse(TypedDict):
+    """
+    Represents the structure of an error response.
+
+    Attributes:
+        detail (list[ErrorDetail]): A list of error details, each providing specific information
+        about an individual error encountered.
+    """
+    detail: list[ErrorDetail]
+
+# ---------- Language and Gender Options ---------- #
 
 class LanguageOptionsDict(TypedDict):
     """
@@ -37,6 +66,23 @@ class LanguageOptionsDict(TypedDict):
     short_name: str
 
 
+class Gender(IntEnum):
+    """
+    This Enum class represents the gender categories.
+
+    Attributes:
+    - NOT_KNOWN (int): Gender is not known.
+    - MALE (int): Male gender.
+    - FEMALE (int): Female gender.
+    - NOT_APPLICABLE (int): Gender is not applicable.
+    """
+    NOT_KNOWN = 0
+    MALE = 1
+    FEMALE = 2
+    NOT_APPLICABLE = 9
+
+# ---------- Voices List ---------- #
+
 class VoicesListDict(TypedDict):
     """
     This class represents a dictionary that maps voice properties to their values.
@@ -49,6 +95,7 @@ class VoicesListDict(TypedDict):
     id: int
     voice_name: str
 
+# ---------- Task Status ---------- #
 
 class TaskStatus(TypedDict):
     """
@@ -68,6 +115,7 @@ class TaskStatus(TypedDict):
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
     run_id: Optional[int]
 
+# ---------- Dubbing Information ---------- #
 
 class DubbedRunInfo(TypedDict):
     """
@@ -80,21 +128,6 @@ class DubbedRunInfo(TypedDict):
     video_url: str
     audio_url: str
 
-
-class Gender(IntEnum):
-    """
-    This Enum class represents the gender categories.
-
-    Attributes:
-    - NOT_KNOWN (int): Gender is not known.
-    - MALE (int): Male gender.
-    - FEMALE (int): Female gender.
-    - NOT_APPLICABLE (int): Gender is not applicable.
-    """
-    NOT_KNOWN = 0
-    MALE = 1
-    FEMALE = 2
-    NOT_APPLICABLE = 9
 
 # --------------------------------------------------------------------------------------------------
 
@@ -252,7 +285,10 @@ class CambAI:
             return response.json()
 
 
-    def get_all_voices(self, write_to_file: bool = False) -> list[Optional[VoicesListDict]]:
+    def get_all_voices(
+        self,
+        write_to_file: bool = False
+        ) -> list[Optional[VoicesListDict]]:
         """
         This method sends a GET request to the API endpoint to retrieve all voices.
         If write_to_file is True, it writes the response to a JSON file.
@@ -296,7 +332,7 @@ class CambAI:
     # ---------- Dubbing ---------- #
 
     def start_dubbing(self, *, video_url: str, source_language: int = 1,
-                      target_language: int) -> dict:
+                      target_language: int) -> dict[str, str]:
         """
         Starts the dubbing process for a given video URL.
 
@@ -498,7 +534,7 @@ class CambAI:
     # ---------- TTS ---------- #
 
     def create_tts(self, *, text: str, voice_id: int, language: int, gender: Gender,
-                   age: Optional[int] = None):
+                   age: Optional[int] = None) -> dict[str, str]:
         """
         Create a text-to-speech (TTS) request.
 
