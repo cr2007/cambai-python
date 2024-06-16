@@ -224,7 +224,7 @@ class CambAI:
     # ---------- Voices ---------- #
 
     def create_custom_voice(self, *, voice_name: str, gender: Gender, age: int = 30,
-                            file: str) -> dict[str, int]:
+                            file: str) -> Optional[dict[str, str]]:
         """
         Creates a custom voice profile based on the provided parameters.
 
@@ -255,6 +255,9 @@ class CambAI:
             raise TypeError("Gender must be an instance of Gender Enum.\n",
                             "Make sure you have imported the 'Gender' Enum")
 
+        if not file.endswith(".wav"):
+            raise ValueError(f"File '{file}' is not a WAV file.")
+
         # Construct the API endpoint URL
         url: str = self.create_api_endpoint("create_custom_voice")
 
@@ -266,23 +269,25 @@ class CambAI:
         }
 
         # Prepare the file to be uploaded using 'with' statement for better resource management
-        with open(file, 'rb') as file_resource:
-            files: dict[str, BinaryIO] = {
-                'file': file_resource
-            }
+        try:
+            with open(file, 'rb') as file_resource:
+                # Send a POST request to the API with the file and data
+                response: requests.Response = self.session.post(
+                    url=url,
+                    files={'file': file_resource},
+                    data=data
+                )
 
-            # Send a POST request to the API with the file and data
-            response: requests.Response = self.session.post(
-                url=url,
-                files=files,
-                data=data
-            )
+                # If the status code is not 200, raise an HTTPError
+                response.raise_for_status()
 
-            # If the status code is not 200, raise an HTTPError
-            response.raise_for_status()
-
-            # Return the JSON response from the API
-            return response.json()
+                # Return the JSON response from the API
+                return response.json()
+        except FileNotFoundError:
+            print("File not found."
+                  "Please enter a valid file path containing an audio file to send to the API.")
+        except requests.exceptions.RequestException as e:
+            print("There was an exception that occurred while handling your request.", e)
 
 
     def get_all_voices(
