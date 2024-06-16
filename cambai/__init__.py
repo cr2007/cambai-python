@@ -197,7 +197,7 @@ class CambAI:
         Creates a custom voice profile based on the provided parameters.
 
         This method sends a request to a predefined API endpoint to create a custom voice profile.
-        It requires a voice name, gender (as an instance of a Gender Enum), and optionally an age
+        It requires a voice name, Gender (as an instance of a Gender Enum), and optionally an age
         and a file path to an audio sample.
 
         Parameters:
@@ -226,11 +226,6 @@ class CambAI:
         # Construct the API endpoint URL
         url: str = self.create_api_endpoint("create_custom_voice")
 
-        # Prepare the file to be uploaded
-        files = {
-            'file': open(file, 'rb')
-        }
-
         # Prepare the data payload with voice properties
         data = {
             "voice_name": voice_name,
@@ -238,18 +233,24 @@ class CambAI:
             "age": age
         }
 
-        # Send a POST request to the API with the file and data
-        response: requests.Response = self.session.post(
-            url=url,
-            files=files,
-            data=data
-        )
+        # Prepare the file to be uploaded using 'with' statement for better resource management
+        with open(file, 'rb') as file_resource:
+            files: dict[str, BinaryIO] = {
+                'file': file_resource
+            }
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+            # Send a POST request to the API with the file and data
+            response: requests.Response = self.session.post(
+                url=url,
+                files=files,
+                data=data
+            )
 
-        # Return the JSON response from the API
-        return response.json()
+            # If the status code is not 200, raise an HTTPError
+            response.raise_for_status()
+
+            # Return the JSON response from the API
+            return response.json()
 
 
     def get_all_voices(self, write_to_file: bool = False) -> list[Optional[VoicesListDict]]:
