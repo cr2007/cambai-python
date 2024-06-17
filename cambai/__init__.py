@@ -95,6 +95,12 @@ class VoicesListDict(TypedDict):
     id: int
     voice_name: str
 
+
+class VoiceProperties(TypedDict):
+    voice_name: str
+    gender: int
+    age: int
+
 # ---------- Task Status ---------- #
 
 class TaskStatus(TypedDict):
@@ -262,7 +268,7 @@ class CambAI:
         url: str = self.create_api_endpoint("create_custom_voice")
 
         # Prepare the data payload with voice properties
-        data = {
+        data: VoiceProperties = {
             "voice_name": voice_name,
             "gender": gender.value,
             "age": age
