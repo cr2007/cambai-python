@@ -142,8 +142,15 @@ class DubbedRunInfo(TypedDict):
     video_url: str
     audio_url: str
 
+# ---------- Transcription Result ---------- #
 
-# --------------------------------------------------------------------------------------------------
+class TranscriptionResult(TypedDict):
+    start: float
+    end: float
+    text: str
+    speaker: str
+
+# ------------------------------------------------------------------------------------------------ #
 
 class CambAI:
     """
@@ -463,7 +470,7 @@ class CambAI:
         url: str = self.create_api_endpoint(f"dubbed_run_info/{run_id}")
 
         # Send a GET request to the API endpoint
-        response = self.session.get(url)
+        response: requests.Response = self.session.get(url)
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
@@ -800,3 +807,18 @@ class CambAI:
             print("File not found."
                     "Please enter a valid file path containing an audio file to send to the API.")
             return {"FileNotFoundError": "Enter a valid file path to the audio file"}
+
+
+    def get_transcription_result(self, *, run_id: int, save_to_file: bool = False) -> list[TranscriptionResult]:
+        url: str = self.create_api_endpoint(f"transcription_result/{run_id}")
+
+        response: requests.Response = self.session.get(url)
+
+        if response.status_code != 200:
+            print("Error: There was an error with your request.")
+        else:
+            if save_to_file:
+                with open(f"transcription_result_{run_id}.json", "w") as output_file:
+                    json.dump(response.json(), output_file)
+
+        return response.json()
