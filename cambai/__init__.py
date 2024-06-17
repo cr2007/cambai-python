@@ -809,16 +809,46 @@ class CambAI:
             return {"FileNotFoundError": "Enter a valid file path to the audio file"}
 
 
-    def get_transcription_result(self, *, run_id: int, save_to_file: bool = False) -> list[TranscriptionResult]:
+    def get_transcription_result(self, *, run_id: int,
+                                 save_to_file: bool = False) -> list[TranscriptionResult]:
+        """
+        Retrieves the transcription result for a given run ID and optionally saves it to a file.
+
+        This method contacts a predefined API endpoint to fetch the transcription result associated
+        with a specific run ID. If the `save_to_file` flag is set to True, the method will also save
+        the transcription result to a JSON file on disk.
+
+        Parameters:
+            run_id (int): The unique identifier for the transcription run.
+            save_to_file (bool): A flag indicating whether to save the transcription result to a
+                                 file. Defaults to False.
+
+        Returns:
+            list[TranscriptionResult]: A list of transcription results. Each result is represented
+                                       as a `TranscriptionResult` object.
+
+        Raises:
+            HTTPError: If the request to the API endpoint does not return a 200 status code.
+        """
+
+        # Construct the API endpoint URL using the provided run ID
         url: str = self.create_api_endpoint(f"transcription_result/{run_id}")
 
+        # Perform a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
 
+        # Check if the response status code indicates a successful request
         if response.status_code != 200:
-            print("Error: There was an error with your request.")
+            # Raise an HTTPError if the request was not successful
+            raise requests.HTTPError(f"Error: There was an error with your request."
+                                     "Status code: {response.status_code}")
         else:
+            # If the save_to_file flag is True, save the transcription result to a JSON file
             if save_to_file:
-                with open(f"transcription_result_{run_id}.json", "w") as output_file:
+                with open(f"transcription_result_{run_id}.json", "w",
+                          encoding="utf-8") as output_file:
+                    # Serialize the JSON response and write it to the specified file
                     json.dump(response.json(), output_file)
 
+        # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
