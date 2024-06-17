@@ -145,6 +145,19 @@ class DubbedRunInfo(TypedDict):
 # ---------- Transcription Result ---------- #
 
 class TranscriptionResult(TypedDict):
+    """
+    Represents a single transcription result.
+
+    This class is a TypedDict used for type hinting purposes, defining the structure of a
+    transcription result. It includes the start and end times of the spoken segment, the transcribed
+    text, and the identified speaker.
+
+    Attributes:
+        - start (float): The start time of the transcribed segment, in seconds.
+        - end (float): The end time of the transcribed segment, in seconds.
+        - text (str): The transcribed text of the segment.
+        - speaker (str): The identifier for the speaker in the segment.
+    """
     start: float
     end: float
     text: str
@@ -819,16 +832,16 @@ class CambAI:
         the transcription result to a JSON file on disk.
 
         Parameters:
-            run_id (int): The unique identifier for the transcription run.
-            save_to_file (bool): A flag indicating whether to save the transcription result to a
+            - `run_id` (int): The unique identifier for the transcription run.
+            - `save_to_file` (bool): A flag indicating whether to save the transcription result to a
                                  file. Defaults to False.
 
         Returns:
-            list[TranscriptionResult]: A list of transcription results. Each result is represented
+            - list[TranscriptionResult]: A list of transcription results. Each result is represented
                                        as a `TranscriptionResult` object.
 
         Raises:
-            HTTPError: If the request to the API endpoint does not return a 200 status code.
+            - HTTPError: If the request to the API endpoint does not return a 200 status code.
         """
 
         # Construct the API endpoint URL using the provided run ID
@@ -840,15 +853,14 @@ class CambAI:
         # Check if the response status code indicates a successful request
         if response.status_code != 200:
             # Raise an HTTPError if the request was not successful
-            raise requests.HTTPError(f"Error: There was an error with your request."
-                                     "Status code: {response.status_code}")
-        else:
-            # If the save_to_file flag is True, save the transcription result to a JSON file
-            if save_to_file:
-                with open(f"transcription_result_{run_id}.json", "w",
-                          encoding="utf-8") as output_file:
-                    # Serialize the JSON response and write it to the specified file
-                    json.dump(response.json(), output_file)
+            raise requests.HTTPError("Error: There was an error with your request."
+                                     f"Status code: {response.status_code}")
+
+        # If the save_to_file flag is True, save the transcription result to a JSON file
+        if save_to_file:
+            with open(f"transcription_result_{run_id}.json", "w", encoding="utf-8") as output_file:
+                # Serialize the JSON response and write it to the specified file
+                json.dump(response.json(), output_file)
 
         # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
