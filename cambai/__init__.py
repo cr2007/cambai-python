@@ -744,3 +744,59 @@ class CambAI:
 
         # Get the TTS result and save it to the specified output directory
         self.get_tts_result(run_id=task["run_id"], output_directory=output_directory)
+
+    # ---------- Transcription ---------- #
+
+    def create_transcription(self, /, audio_file: str, language: int) -> dict[str, str]:
+        """
+        Creates a transcription request for an audio file with the specified language.
+
+        This method sends an audio file to a predefined API endpoint for transcription. The API
+        expects the language to be specified as an integer ID within a valid range. The method
+        checks if the provided language ID is within the valid range before sending the request.
+
+        Parameters:
+            - `audio_file` (str): The file path of the audio file to be transcribed.
+            - `language` (int): The language ID for the transcription, must be within 1 to 148.
+
+        Returns:
+            - `dict[str, str]`: The JSON response from the API if successful. If an error occurs, a
+            dictionary with an appropriate error message is returned.
+
+        Raises:
+            - `ValueError`: If the language ID is not within the valid range.
+            - `FileNotFoundError`: If the specified audio file does not exist.
+        """
+        # Check if the language ID is not within the valid range
+        if not 1 <= language <= 148:
+            raise ValueError("Language ID must be between 1 and 148")
+
+        # Construct the API endpoint URL
+        url: str = self.create_api_endpoint("create_transcription")
+
+        # Prepare the data payload with the language ID
+        data = {
+            "language": language
+        }
+
+        try:
+            # Open the audio file in binary read mode
+            with open(audio_file, "rb") as audio:
+                # Make a POST request to the API with the audio file and language ID
+                response: requests.Response = self.session.post(
+                    url=url,
+                    files={"file": audio},  # The audio file to be transcribed
+                    data=data  # Additional data including the language ID
+                )
+
+                # Check if the response status code indicates a successful request
+                if response.status_code != 200:
+                    print("Error: There was an error with your POST request.")
+
+                # Return the JSON response from the API
+                return response.json()
+        except FileNotFoundError:
+            # Handle the case where the specified audio file does not exist
+            print("File not found."
+                    "Please enter a valid file path containing an audio file to send to the API.")
+            return {"FileNotFoundError": "Enter a valid file path to the audio file"}
