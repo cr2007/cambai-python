@@ -97,6 +97,14 @@ class VoicesListDict(TypedDict):
 
 
 class VoiceProperties(TypedDict):
+    """
+    Represents the properties of a voice.
+
+    Attributes:
+        voice_name (str): The name of the voice.
+        gender (int): The gender of the voice, represented as an integer.
+        age (int): The age of the voice.
+    """
     voice_name: str
     gender: int
     age: int
