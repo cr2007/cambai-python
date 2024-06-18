@@ -18,8 +18,8 @@ This is a Python wrapper for the CambAI API. It is designed to make it easy to i
 
 ## Checklist
 
-- [ ] Transcription
-  - [ ] Overall `transcribe` method
+- [X] Transcription
+  - [X] Overall `transcribe` method
 - [ ] Translation
   - [ ] Create Translation
   - [ ] Poll for Translation Status
