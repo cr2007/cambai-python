@@ -864,3 +864,83 @@ class CambAI:
 
         # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
+
+
+    def transcribe(self, *, audio_file: str, language: int, save_to_file: bool = False,
+                   polling_interval: float = 2, debug: bool = False) -> list[TranscriptionResult]:
+        """
+        Transcribes the given audio file to text in the specified language, optionally saving the
+        result to a file.
+
+        This method initiates a transcription task for an audio file, periodically checks for the
+        task's completion,
+        and retrieves the transcription result. It supports optional debugging output and can save
+        the transcription results to a file if requested.
+
+        Parameters:
+            - audio_file (str): The path to the audio file to be transcribed.
+            - language (int): The language code for the transcription service to use.
+            - save_to_file (bool): If True, saves the transcription result to a file. Defaults to
+                                   False.
+            - polling_interval (float): The time interval, in seconds, between status checks of the
+                                       transcription task.
+                                       Defaults to 2 seconds.
+            - debug (bool): If True, prints debugging information during the transcription process.
+                          Defaults to False.
+
+        Returns:
+            - list[TranscriptionResult]: A list of transcription results, each represented as a
+              `TranscriptionResult` object.
+
+        Raises:
+            APIError: If the transcription task fails or if the run ID is None after the task
+                      completes.
+        """
+
+        task: TaskStatus
+        task_id: str
+
+        print("Starting Transcription")
+
+        # Create a new transcription task with the specified audio file and language
+        response = self.create_transcription(audio_file, language)
+
+        print(f"Transcription Task Started: {response}")
+
+        task_id = response["task_id"]
+
+        while True:
+            # Check the current status of the transcription task
+            task = self.get_task_status("transcription", task_id)
+
+            if debug:
+                print(f"Task Status: {task['status']}, Run ID: {task['run_id']}")
+
+            if task["status"] == "SUCCESS":
+                # Exit the loop if the task is successfully completed
+                break
+
+            if task["status"] not in ["SUCCESS", "PENDING"]:
+                # Raise an error if the task status indicates a failure
+                raise APIError(f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}")
+
+            if debug:
+                print(f"Sleeping for {polling_interval} seconds")
+
+            # Wait for the specified polling interval with a progress bar
+            for _ in tqdm(range(math.ceil(polling_interval)), unit="s",
+                          desc=f"Waiting {polling_interval} seconds before checking status again"):
+                sleep(1)
+
+        # Retrieve the final task status to get the run ID
+        task = self.get_task_status("transcription", task_id)
+
+        if task["run_id"] is None:
+            # Raise an error if the run ID is missing
+            raise APIError("Run ID is None")
+
+        # Retrieve and return the transcription result
+        return self.get_transcription_result(
+            run_id=task["run_id"],
+            save_to_file=save_to_file
+        )
