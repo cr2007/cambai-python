@@ -859,8 +859,8 @@ class CambAI:
         # If the save_to_file flag is True, save the transcription result to a JSON file
         if save_to_file:
             with open(f"transcription_result_{run_id}.json", "w", encoding="utf-8") as output_file:
-                # Serialize the JSON response and write it to the specified file
-                json.dump(response.json(), output_file)
+                # Serialize JSON response with pretty printing and write it to the specified file
+                json.dump(response.json(), output_file, indent=4)
 
         # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
