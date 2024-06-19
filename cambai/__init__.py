@@ -154,11 +154,15 @@ class TranscriptionResult(TypedDict):
 
 class DubbedRunInfo(TypedDict):
     """
-    Represents information about a dubbed run.
+    Represents information about a dubbed run, including URLs for the video and audio,
+    and the transcription results.
 
     Attributes:
-        - video_url (str): The URL of the video.
-        - audio_url (str): The URL of the audio.
+        - video_url (`str`): The URL of the video associated with the dubbed run.
+        - audio_url (`str`): The URL of the audio track used in the dubbed video.
+        - transcript (`list[TranscriptionResult]`): A list of transcription results,
+                                                each representing a segment of the audio
+                                                transcribed to text.
     """
     video_url: str
     audio_url: str
