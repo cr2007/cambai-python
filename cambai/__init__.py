@@ -129,19 +129,6 @@ class TaskStatus(TypedDict):
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
     run_id: Optional[int]
 
-# ---------- Dubbing Information ---------- #
-
-class DubbedRunInfo(TypedDict):
-    """
-    Represents information about a dubbed run.
-
-    Attributes:
-        - video_url (str): The URL of the video.
-        - audio_url (str): The URL of the audio.
-    """
-    video_url: str
-    audio_url: str
-
 # ---------- Transcription Result ---------- #
 
 class TranscriptionResult(TypedDict):
@@ -162,6 +149,20 @@ class TranscriptionResult(TypedDict):
     end: float
     text: str
     speaker: str
+
+# ---------- Dubbing Information ---------- #
+
+class DubbedRunInfo(TypedDict):
+    """
+    Represents information about a dubbed run.
+
+    Attributes:
+        - video_url (str): The URL of the video.
+        - audio_url (str): The URL of the audio.
+    """
+    video_url: str
+    audio_url: str
+    transcript: list[TranscriptionResult]
 
 # ------------------------------------------------------------------------------------------------ #
 
