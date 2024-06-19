@@ -412,7 +412,7 @@ class CambAI:
         }
 
         # Send a POST request to the API endpoint with the prepared data
-        response = self.session.post(url=url, json=data)
+        response: requests.Response = self.session.post(url=url, json=data)
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
@@ -459,7 +459,7 @@ class CambAI:
                              "or 'transcription'")
 
         # Send a GET request to the API endpoint
-        response = self.session.get(url)
+        response: requests.Response = self.session.get(url)
 
         # If the status code is not 200, raise an HTTPError
         response.raise_for_status()
@@ -624,7 +624,7 @@ class CambAI:
         self.session.headers["Content-Type"] = "application/json"
 
         # Send the POST request to the API
-        response = self.session.post(url=url, json=data)
+        response: requests.Response = self.session.post(url=url, json=data)
 
         # Raise an exception if the request was unsuccessful
         response.raise_for_status()
@@ -672,7 +672,7 @@ class CambAI:
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
 
         # Send a GET request to the API endpoint
-        response = self.session.get(url, stream=True)
+        response: requests.Response = self.session.get(url, stream=True)
 
         # Raise an HTTPError if one occurred
         response.raise_for_status()
@@ -800,7 +800,7 @@ class CambAI:
         url: str = self.create_api_endpoint("create_transcription")
 
         # Prepare the data payload with the language ID
-        data = {
+        data: dict[str, int] = {
             "language": language
         }
 
