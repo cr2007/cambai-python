@@ -168,6 +168,18 @@ class DubbedRunInfo(TypedDict):
     audio_url: str
     transcript: list[TranscriptionResult]
 
+# ---------- Translation Information ---------- #
+
+class BasicTranslationData(TypedDict, total=True):
+    source_language: int
+    target_language: int
+    text:            str
+
+class ExtendedTranslationData(BasicTranslationData, total=False):
+    age:             Optional[int]
+    formality:       Optional[int]
+    gender:          Optional[int]
+
 # ------------------------------------------------------------------------------------------------ #
 
 class CambAI:
@@ -949,3 +961,62 @@ class CambAI:
             run_id=task["run_id"],
             save_to_file=save_to_file
         )
+
+    # ---------- Translation ---------- #
+
+    def create_translation(
+        self,
+        *,
+        source_language: int,
+        target_language: int,
+        text: str,
+        age: int,
+        formality: Optional[int] = None,
+        gender: Optional[Gender] = None
+        ) -> dict[str, str]:
+
+        # Check if the source language ID is not within the valid range
+        if not 1 <= source_language <= 148:
+            raise ValueError("create_translation: Source Language must be an integer"
+                             "value between 1 and 148. To know more, call"
+                             "the 'get_languages(\"source\")' function")
+
+        # Check if the target language ID is not within the valid range
+        if not 1 <= target_language <= 148:
+            raise ValueError("create_translation: Target Language must be an integer value"
+                             "between 1 and 148. To know more, call the"
+                             "'get_languages(\"target\")' function")
+
+        if formality is not None:
+            if formality not in {1, 2}:
+                raise ValueError("create_translation: formality must be one of {1, 2}")
+
+        url: str = self.create_api_endpoint("create_translation")
+
+        self.session.headers["Content-Type"] = "application/json"
+
+        data: ExtendedTranslationData = {
+            "source_language": source_language,
+            "target_language": target_language,
+            "text": text
+        }
+
+        if age is not None:
+            data["age"] = age
+
+        if formality is not None:
+            data["formality"] = formality
+
+        if gender is not None:
+            data["gender"] = gender.value
+
+        response: requests.Response = self.session.post(
+            url=url,
+            json=data
+        )
+
+        # Check if the response status code indicates a successful request
+        if response.status_code != 200:
+            print("Error: There was an error with your POST request.")
+
+        return response.json()
