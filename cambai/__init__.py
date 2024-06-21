@@ -421,8 +421,9 @@ class CambAI:
 
     # ---------- Dubbing ---------- #
 
-    def start_dubbing(self, *, video_url: str, source_language: int = 1,
-                      target_language: int) -> TaskInfo:
+    def start_dubbing(
+        self, *, video_url: str, source_language: int = 1, target_language: int
+    ) -> TaskInfo | ErrorResponse:
         """
         Starts the dubbing process for a given video URL.
 
@@ -458,8 +459,9 @@ class CambAI:
         # Send a POST request to the API endpoint with the prepared data
         response: requests.Response = self.session.post(url=url, json=data)
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+        # Check if the response status code indicates a successful request
+        if response.status_code != 200:
+            print("Error: There was an error with your POST request.")
 
         # Return the response data as a dictionary
         return response.json()
@@ -541,8 +543,15 @@ class CambAI:
         return response.json()
 
 
-    def dub(self, *, video_url: str, source_language: int = 1, target_language: int,
-                polling_interval: float = 2, debug: bool = False) -> DubbedRunInfo:
+    def dub(
+        self,
+        *,
+        video_url: str,
+        source_language: int = 1,
+        target_language: int,
+        polling_interval: float = 2,
+        debug: bool = False,
+    ) -> DubbedRunInfo | ErrorResponse:
         """
         Starts the dubbing process for a given video and periodically checks the status until it's
         done.
@@ -582,6 +591,9 @@ class CambAI:
                                       target_language=target_language)
 
         print(f"Dubbing Task Started: {response}")
+
+        if "detail" in response:
+            return response
 
         # Extract the task ID from the response
         task_id = response["task_id"]
@@ -623,8 +635,16 @@ class CambAI:
 
     # ---------- TTS ---------- #
 
-    def create_tts(self, /, text: str, voice_id: int, language: int, *, gender: Gender,
-                   age: Optional[int] = None) -> TaskInfo:
+    def create_tts(
+        self,
+        /,
+        text: str,
+        voice_id: int,
+        language: int,
+        *,
+        gender: Gender,
+        age: Optional[int] = None,
+    ) -> TaskInfo | ErrorResponse:
         """
         Create a text-to-speech (TTS) request.
 
@@ -671,7 +691,8 @@ class CambAI:
         response: requests.Response = self.session.post(url=url, json=data)
 
         # Raise an exception if the request was unsuccessful
-        response.raise_for_status()
+        if response.status_code != 200:
+            print("Error: There was an error with your POST request.")
 
         # Return the JSON response from the API
         return response.json()
@@ -738,9 +759,18 @@ class CambAI:
             print(f"\nTTS audio written to '{file_path}'")
 
 
-    def tts(self, *, text: str, voice_id: int, language: int, gender: Gender,
-            age: Optional[int] = None, polling_interval: float = 2, debug: bool = False,
-            output_directory: str = "audio_tts") -> None:
+    def tts(
+        self,
+        *,
+        text: str,
+        voice_id: int,
+        language: int,
+        gender: Gender,
+        age: Optional[int] = None,
+        polling_interval: float = 2,
+        debug: bool = False,
+        output_directory: str = "audio_tts",
+    ) -> Optional[ErrorResponse]:
         """
         This method initiates a Text-to-Speech (TTS) process, monitors its status, and retrieves the
         result when ready.
@@ -770,8 +800,8 @@ class CambAI:
             print("Starting TTS process\n")
 
         # Create the TTS task
-        response = self.create_tts(text=text, voice_id=voice_id, language=language,
-                                    gender=gender, age=age)
+        if "detail" in response:
+            return response
 
         # Print the response containing the task ID from the TTS task creation
         print(f"TTS Task Started: {response}\n")
@@ -816,7 +846,9 @@ class CambAI:
 
     # ---------- Transcription ---------- #
 
-    def create_transcription(self, /, audio_file: str, language: int) -> TaskInfo:
+    def create_transcription(
+        self, /, audio_file: str, language: int
+    ) -> TaskInfo | ErrorResponse:
         """
         Creates a transcription request for an audio file with the specified language.
 
@@ -914,9 +946,15 @@ class CambAI:
         # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
 
-
-    def transcribe(self, *, audio_file: str, language: int, save_to_file: bool = False,
-                   polling_interval: float = 2, debug: bool = False) -> list[TranscriptionResult]:
+    def transcribe(
+        self,
+        *,
+        audio_file: str,
+        language: int,
+        save_to_file: bool = False,
+        polling_interval: float = 2,
+        debug: bool = False,
+    ) -> list[TranscriptionResult] | ErrorResponse:
         """
         Transcribes the given audio file to text in the specified language, optionally saving the
         result to a file.
@@ -955,6 +993,9 @@ class CambAI:
         response = self.create_transcription(audio_file, language)
 
         print(f"Transcription Task Started: {response}")
+
+        if "detail" in response:
+            return response
 
         task_id = response["task_id"]
 
