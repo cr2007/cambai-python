@@ -612,7 +612,7 @@ class CambAI:
 
     # ---------- TTS ---------- #
 
-    def create_tts(self, *, text: str, voice_id: int, language: int, gender: Gender,
+    def create_tts(self, /, text: str, voice_id: int, language: int, *, gender: Gender,
                    age: Optional[int] = None) -> dict[str, str]:
         """
         Create a text-to-speech (TTS) request.
