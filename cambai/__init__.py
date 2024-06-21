@@ -111,6 +111,17 @@ class VoiceProperties(TypedDict):
 
 # ---------- Task Status ---------- #
 
+class TaskInfo(TypedDict):
+    """
+    Represents the object returned from a task creation.
+
+    Attributes:
+        - task_id (str): A unique identifier for the task.
+    """
+
+    task_id: str
+
+
 class TaskStatus(TypedDict):
     """
     A TypedDict representing the status of a dubbing task.
@@ -411,7 +422,7 @@ class CambAI:
     # ---------- Dubbing ---------- #
 
     def start_dubbing(self, *, video_url: str, source_language: int = 1,
-                      target_language: int) -> dict[str, str]:
+                      target_language: int) -> TaskInfo:
         """
         Starts the dubbing process for a given video URL.
 
@@ -613,7 +624,7 @@ class CambAI:
     # ---------- TTS ---------- #
 
     def create_tts(self, /, text: str, voice_id: int, language: int, *, gender: Gender,
-                   age: Optional[int] = None) -> dict[str, str]:
+                   age: Optional[int] = None) -> TaskInfo:
         """
         Create a text-to-speech (TTS) request.
 
@@ -805,7 +816,7 @@ class CambAI:
 
     # ---------- Transcription ---------- #
 
-    def create_transcription(self, /, audio_file: str, language: int) -> dict[str, str]:
+    def create_transcription(self, /, audio_file: str, language: int) -> TaskInfo:
         """
         Creates a transcription request for an audio file with the specified language.
 
@@ -994,7 +1005,7 @@ class CambAI:
             age: int,
             formality: Optional[int] = None,
             gender: Optional[Gender] = None
-            ) -> dict[str, str]:
+            ) -> TaskInfo:
         """
         Creates a translation request and sends it to the translation API.
 
