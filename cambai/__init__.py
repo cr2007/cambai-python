@@ -171,14 +171,35 @@ class DubbedRunInfo(TypedDict):
 # ---------- Translation Information ---------- #
 
 class BasicTranslationData(TypedDict, total=True):
+    """
+    Represents the basic data required for a translation request.
+
+    Attributes:
+        - source_language (int): The ID of the source language.
+        - target_language (int): The ID of the target language.
+        - text (str): The text to be translated.
+    """
+
     source_language: int
     target_language: int
     text:            str
 
 class ExtendedTranslationData(BasicTranslationData, total=False):
-    age:             Optional[int]
-    formality:       Optional[int]
-    gender:          Optional[int]
+    """
+    Extends BasicTranslationData with optional parameters for a more customized translation request.
+
+    Attributes:
+        - age (Optional[int]): The age of the text's intended audience. Used to tailor the
+                               translation.
+        - formality (Optional[int]): The formality level of the translation. Can be informal or
+                                     formal.
+        - gender (Optional[int]): The gender of the text's intended audience. Used to adjust the
+                                  translation accordingly.
+    """
+
+    age:       Optional[int]
+    formality: Optional[int]
+    gender:    Optional[int]
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -965,58 +986,94 @@ class CambAI:
     # ---------- Translation ---------- #
 
     def create_translation(
-        self,
-        *,
-        source_language: int,
-        target_language: int,
-        text: str,
-        age: int,
-        formality: Optional[int] = None,
-        gender: Optional[Gender] = None
-        ) -> dict[str, str]:
+            self,
+            *,
+            source_language: int,
+            target_language: int,
+            text: str,
+            age: int,
+            formality: Optional[int] = None,
+            gender: Optional[Gender] = None
+            ) -> dict[str, str]:
+        """
+        Creates a translation request and sends it to the translation API.
 
-        # Check if the source language ID is not within the valid range
+        This method constructs a translation request with mandatory and optional parameters,
+        validates the parameters, and sends the request to the specified translation API endpoint.
+        It returns the response in JSON format.
+
+        Parameters:
+            - source_language (int): The ID of the source language.
+            - target_language (int): The ID of the target language.
+            - text (str): The text to be translated.
+            - age (int): The age of the text's intended audience.
+            - formality (Optional[int]): The formality level of the translation, if applicable.
+            - gender (Optional[Gender]): The gender of the text's intended audience, if applicable.
+
+        Returns:
+            - dict[str, str]: The response from the translation API in JSON format.
+
+        Raises:
+            - ValueError: If any of the language IDs or formality values are out of their valid
+                          range.
+
+        Note:
+            - The `source_language` and `target_language` IDs must be within the range [1, 148].
+            - The `formality` parameter, if provided, must be either 1 or 2.
+            - The `gender` parameter, if provided, must be an instance of the `Gender` enum.
+        """
+
+        # Validate source language ID
         if not 1 <= source_language <= 148:
             raise ValueError("create_translation: Source Language must be an integer"
                              "value between 1 and 148. To know more, call"
                              "the 'get_languages(\"source\")' function")
 
-        # Check if the target language ID is not within the valid range
+        # Validate target language ID
         if not 1 <= target_language <= 148:
             raise ValueError("create_translation: Target Language must be an integer value"
                              "between 1 and 148. To know more, call the"
                              "'get_languages(\"target\")' function")
 
-        if formality is not None:
-            if formality not in {1, 2}:
-                raise ValueError("create_translation: formality must be one of {1, 2}")
+        # Validate formality, if provided
+        if (formality is not None) and (formality not in {1, 2}):
+            raise ValueError("create_translation: formality must be one of {1, 2}")
 
+        # Check if the gender is an instance of the Gender Enum
+        if (gender is not None) and (not isinstance(gender, Gender)):
+            raise TypeError("Gender must be an instance of Gender Enum.\n",
+                            "Make sure you have imported the 'Gender' Enum")
+
+        # Construct the API endpoint URL
         url: str = self.create_api_endpoint("create_translation")
 
+        # Set the content type for the request
         self.session.headers["Content-Type"] = "application/json"
 
+        # Construct the data payload for the POST request
         data: ExtendedTranslationData = {
             "source_language": source_language,
             "target_language": target_language,
             "text": text
         }
 
+        # Add optional parameters to the payload, if provided
         if age is not None:
             data["age"] = age
-
         if formality is not None:
             data["formality"] = formality
-
         if gender is not None:
             data["gender"] = gender.value
 
+        # Send the POST request to the API
         response: requests.Response = self.session.post(
             url=url,
             json=data
         )
 
-        # Check if the response status code indicates a successful request
+        # Check for successful response
         if response.status_code != 200:
             print("Error: There was an error with your POST request.")
 
+        # Return the JSON response
         return response.json()
