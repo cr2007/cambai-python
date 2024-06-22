@@ -501,7 +501,7 @@ class CambAI:
 
 
     def get_task_status(
-        self, task: Literal["tts", "dubbing", "transcription"], task_id: str
+        self, task: Literal["tts", "dubbing", "transcription", "translation"], task_id: str
     ) -> TaskStatus:
         """
         Retrieves the status of a specific task.
@@ -531,10 +531,12 @@ class CambAI:
             url: str = self.create_api_endpoint(f"tts/{task_id}")
         elif task == "transcription":
             url: str = self.create_api_endpoint(f"create_transcription/{task_id}")
+        elif task == "translation":
+            url: str = self.create_api_endpoint(f"create_translation/{task_id}")
         else:
             raise ValueError(
-                "Invalid task type. Must be one of 'dubbing', 'tts',"
-                "or 'transcription'"
+                "Invalid task type. Must be one of 'dubbing', 'tts', 'transcription'"
+                "or 'translation'"
             )
 
         # Send a GET request to the API endpoint
