@@ -237,6 +237,8 @@ class ExtendedTranslationData(BasicTranslationData, total=False):
     formality: Optional[int]
     gender:    Optional[int]
 
+class TranslationResult(TypedDict):
+    text: str
 
 # ------------------------------------------------------------------------------------------------ #
 
@@ -1195,4 +1197,16 @@ class CambAI:
             print("Error: There was an error with your POST request.")
 
         # Return the JSON response
+        return response.json()
+
+
+    def get_translation_result(self, /, run_id: int, *, save_to_file: bool = False) -> TranslationResult:
+
+        url: str = self.create_api_endpoint(f"translation_result/{run_id}")
+
+        response: requests.Response = self.session.get(url)
+
+        if response.status_code != 200:
+            print("Error: There was an error with your GET request.")
+
         return response.json()
