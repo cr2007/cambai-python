@@ -1200,7 +1200,9 @@ class CambAI:
         return response.json()
 
 
-    def get_translation_result(self, /, run_id: int, *, save_to_file: bool = False) -> TranslationResult:
+    def get_translation_result(
+        self, /, run_id: int, *, save_to_file: bool = False
+    ) -> TranslationResult:
 
         url: str = self.create_api_endpoint(f"translation_result/{run_id}")
 
