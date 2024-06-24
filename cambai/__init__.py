@@ -1210,5 +1210,15 @@ class CambAI:
 
         if response.status_code != 200:
             print("Error: There was an error with your GET request.")
+            return response.json()
+
+        if save_to_file:
+            # text_to_write = response.json()
+            with open(f"translation_result_{run_id}.txt", "w", encoding="utf-8") as file:
+                file.writelines([
+                    "Camb AI Translation Result\n",
+                    f"Run ID: {run_id}\n"
+                ])
+                file.write(response.json()["text"])
 
         return response.json()
