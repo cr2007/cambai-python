@@ -1203,17 +1203,30 @@ class CambAI:
     def get_translation_result(
         self, /, run_id: int, *, save_to_file: bool = False
     ) -> TranslationResult:
+        """
+        Retrieves the translation result for a given run ID.
 
+        Args:
+            self (object): The instance of the class.
+            run_id (int): The ID of the translation run.
+            save_to_file (bool): Whether to save the result to a file. Defaults to False.
+
+        Returns:
+            TranslationResult: The translation result as a dictionary.
+        """
+
+        # Create the URL for the API endpoint
         url: str = self.create_api_endpoint(f"translation_result/{run_id}")
 
+        # Send a GET request to the API endpoint and get the response
         response: requests.Response = self.session.get(url)
 
         if response.status_code != 200:
             print("Error: There was an error with your GET request.")
             return response.json()
 
+        # If save_to_file is True, write the translation result to a file
         if save_to_file:
-            # text_to_write = response.json()
             with open(f"translation_result_{run_id}.txt", "w", encoding="utf-8") as file:
                 file.writelines([
                     "Camb AI Translation Result\n",
