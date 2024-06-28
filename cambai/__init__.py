@@ -724,7 +724,7 @@ class CambAI:
         voice_id: int,
         language: int,
         *,
-        gender: Gender,
+        gender: Optional[Gender] = None,
         age: Optional[int] = None,
     ) -> TaskInfo:
         """
@@ -746,11 +746,10 @@ class CambAI:
         """
 
         # Check if the gender is an instance of the Gender Enum
-        if not isinstance(gender, Gender):
-            raise TypeError(
-                "Gender must be an instance of Gender Enum.\n",
-                "Make sure you have imported the 'Gender' Enum",
-            )
+        # Validate gender is an instance of Gender Enum, if provided
+        if (gender is not None) and (not isinstance(gender, Gender)):
+            raise TypeError("Gender must be an instance of Gender Enum.\n"
+                            "Ensure 'Gender' Enum is imported.")
 
         # Check if the language ID is not within the valid range
         if not 1 <= language <= 148:
@@ -764,9 +763,13 @@ class CambAI:
             "text": text,
             "voice_id": voice_id,
             "language": language,
-            "gender": gender.value,
-            "age": age,
         }
+
+        # Add optional parameters to the payload, if provided
+        if gender is not None:
+            data["gender"] = gender.value
+        if age is not None:
+            data["age"] = age
 
         # Set the Content-Type header to 'application/json'
         self.session.headers["Content-Type"] = "application/json"
@@ -785,7 +788,7 @@ class CambAI:
         return response.json()
 
 
-    def get_tts_status(self, task_id: str) -> TaskStatus:
+    def get_tts_status(self, /, task_id: str) -> TaskStatus:
         """
         Get the status of a text-to-speech (TTS) task.
 
@@ -802,7 +805,7 @@ class CambAI:
         return self.get_task_status("tts", task_id)
 
 
-    def get_tts_result(self, run_id: int, output_directory: Optional[str]) -> None:
+    def get_tts_result(self, /, run_id: int, output_directory: Optional[str]) -> None:
         """
         This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
         it as a .wav file.
@@ -854,11 +857,12 @@ class CambAI:
 
     def tts(
         self,
-        *,
+        /,
         text: str,
         voice_id: int,
         language: int,
-        gender: Gender,
+        *,
+        gender: Optional[Gender] = None,
         age: Optional[int] = None,
         polling_interval: float = 2,
         debug: bool = False,
