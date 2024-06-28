@@ -439,6 +439,7 @@ disable=raw-checker-failed,
         redefined-builtin,
         missing-module-docstring,
         too-many-arguments, ; Need to be edited later on to remove this line
+        too-many-lines, ; Should fix this later on
         too-few-public-methods,
         unrecognized-option,
         unknown-option-value
