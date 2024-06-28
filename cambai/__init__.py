@@ -39,8 +39,8 @@ class ErrorDetail(TypedDict):
         type (str): The type of error.
     """
 
-    loc: list[str]
-    msg: str
+    loc:  list[str]
+    msg:  str
     type: str
 
 
@@ -69,8 +69,8 @@ class LanguageOptionsDict(TypedDict):
         short_name (str): The short name of the language.
     """
 
-    id: int
-    language: str
+    id:         int
+    language:   str
     short_name: str
 
 
@@ -104,7 +104,7 @@ class VoicesListDict(TypedDict):
         voice_name (str): The name of the voice.
     """
 
-    id: int
+    id:         int
     voice_name: str
 
 
@@ -119,8 +119,8 @@ class VoiceProperties(TypedDict):
     """
 
     voice_name: str
-    gender: int
-    age: int
+    gender:     int
+    age:        int
 
 
 # ---------- Task Status ---------- #
@@ -175,9 +175,9 @@ class TranscriptionResult(TypedDict):
         - speaker (str): The identifier for the speaker in the segment.
     """
 
-    start: float
-    end: float
-    text: str
+    start:   float
+    end:     float
+    text:    str
     speaker: str
 
 
@@ -197,8 +197,8 @@ class DubbedRunInfo(TypedDict):
                                                 transcribed to text.
     """
 
-    video_url: str
-    audio_url: str
+    video_url:  str
+    audio_url:  str
     transcript: list[TranscriptionResult]
 
 
@@ -237,6 +237,7 @@ class ExtendedTranslationData(BasicTranslationData, total=False):
     formality: Optional[int]
     gender:    Optional[int]
 
+
 class TranslationResult(TypedDict):
     """
     Represents the result of a translation operation.
@@ -244,6 +245,7 @@ class TranslationResult(TypedDict):
     Attributes:
         text (str): The translated text.
     """
+
     text: str
 
 # ------------------------------------------------------------------------------------------------ #
