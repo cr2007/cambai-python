@@ -900,7 +900,7 @@ class CambAI:
             raise APIError("Run ID is None")
 
         # Get the TTS result and save it to the specified output directory
-        self.get_tts_result(run_id=task["run_id"], output_directory=output_directory)
+        return self.get_tts_result(run_id=task["run_id"], output_directory=output_directory)
 
     # ---------- Transcription ---------- #
 
