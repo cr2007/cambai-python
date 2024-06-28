@@ -809,7 +809,9 @@ class CambAI:
         return self.get_task_status("tts", task_id)
 
 
-    def get_tts_result(self, /, run_id: int, output_directory: Optional[str] = None) -> None:
+    def get_tts_result(
+        self, /, run_id: int, *, output_directory: Optional[str] = "audio_tts"
+    ) -> None:
         """
         This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
         it as a .wav file.
@@ -822,10 +824,6 @@ class CambAI:
         Returns:
         None
         """
-
-        # Check if output_directory is None and set it to default if it is
-        if output_directory is None:
-            output_directory = "audio_tts"
 
         # Create the API endpoint URL using the provided run_id
         url: str = self.create_api_endpoint(f"tts_result/{run_id}")
@@ -842,7 +840,7 @@ class CambAI:
             sys.exit(1)
 
         # Check if the output directory exists
-        if not os.path.exists(output_directory):
+        if (output_directory is not None) and (not os.path.exists(output_directory)):
             print("File directory does not exist. Creating directory...")
             # Create the directory if it doesn't exist
             os.makedirs(output_directory)
