@@ -442,7 +442,8 @@ class CambAI:
         if write_to_file:
             # If the file already exists, remove it before writing the new data
             if os.path.exists("voices.json"):
-                print("'voices.json' already exists.\n" "Removing the existing file...")
+                print("'voices.json' already exists.")
+                print("Removing the existing file...")
                 os.remove("voices.json")
 
             # Open the file in write mode
