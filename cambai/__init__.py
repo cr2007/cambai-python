@@ -238,6 +238,12 @@ class ExtendedTranslationData(BasicTranslationData, total=False):
     gender:    Optional[int]
 
 class TranslationResult(TypedDict):
+    """
+    Represents the result of a translation operation.
+
+    Attributes:
+        text (str): The translated text.
+    """
     text: str
 
 # ------------------------------------------------------------------------------------------------ #
