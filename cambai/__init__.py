@@ -120,7 +120,7 @@ class VoiceProperties(TypedDict):
 
     voice_name: str
     gender:     int
-    age:        int
+    age:        Optional[int]
 
 
 # ---------- Task Status ---------- #
@@ -352,8 +352,8 @@ class CambAI:
     # ---------- Voices ---------- #
 
     def create_custom_voice(
-        self, *, voice_name: str, gender: Gender, age: int = 30, file: str
-    ) -> Optional[dict[str, str]]:
+        self, *, voice_name: str, gender: Gender, age: Optional[int] = 30, file: str
+    ) -> dict[str, str]:
         """
         Creates a custom voice profile based on the provided parameters.
 
@@ -396,8 +396,11 @@ class CambAI:
         data: VoiceProperties = {
             "voice_name": voice_name,
             "gender": gender.value,
-            "age": age,
+            "age": None
         }
+
+        if age is not None:
+            data["age"] = age
 
         # Prepare the file to be uploaded using 'with' statement for better resource management
         try:
@@ -422,12 +425,12 @@ class CambAI:
                 "File not found."
                 "Please enter a valid file path containing an audio file to send to the API."
             )
-            return None
+            sys.exit(1)
         except requests.exceptions.RequestException as e:
             print(
                 "There was an exception that occurred while handling your request.", e
             )
-            return None
+            sys.exit(1)
 
 
     def get_all_voices(
