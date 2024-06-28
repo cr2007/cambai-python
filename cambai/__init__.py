@@ -805,7 +805,7 @@ class CambAI:
         return self.get_task_status("tts", task_id)
 
 
-    def get_tts_result(self, /, run_id: int, output_directory: Optional[str]) -> None:
+    def get_tts_result(self, /, run_id: int, output_directory: Optional[str] = None) -> None:
         """
         This method retrieves the Text-to-Speech (TTS) result from a specific API endpoint and saves
         it as a .wav file.
@@ -864,7 +864,7 @@ class CambAI:
         *,
         gender: Optional[Gender] = None,
         age: Optional[int] = None,
-        polling_interval: float = 2,
+        polling_interval: float = 20,
         debug: bool = False,
         output_directory: str = "audio_tts",
     ) -> None:
