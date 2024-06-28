@@ -627,7 +627,7 @@ class CambAI:
         source_language: int,
         target_language: int,
         *,
-        polling_interval: float = 2,
+        polling_interval: float = 30,
         debug: bool = False,
     ) -> DubbedRunInfo:
         """
