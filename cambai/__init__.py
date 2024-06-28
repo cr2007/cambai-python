@@ -331,8 +331,13 @@ class CambAI:
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         if write_to_file:
             with open(f"{language_type}_languages.json", "w", encoding="utf-8") as file:
@@ -403,7 +408,12 @@ class CambAI:
                 )
 
                 # If the status code is not 200, raise an HTTPError
-                response.raise_for_status()
+                if response.status_code != 200:
+                    print(f"Error: There was a {response.status_code} error"
+                          "when setting up your custom voice.")
+                    print(f"Response: {response.json()}")
+                    print("Kindly fix the issue and try again.")
+                    sys.exit(1)
 
                 # Return the JSON response from the API
                 return response.json()
@@ -443,8 +453,13 @@ class CambAI:
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # If write_to_file is True, write the response to a JSON file
         if write_to_file:
@@ -460,14 +475,14 @@ class CambAI:
                 json.dump(response.json(), file, indent=4)
             print("Voices written to voices.json")
 
-        # Return the response data as a list of voice dictionaries
+        # Return the list of voices as a response
         return response.json()
 
     # ---------- Dubbing ---------- #
 
     def start_dubbing(
         self, *, video_url: str, source_language: int = 1, target_language: int
-    ) -> TaskInfo | ErrorResponse:
+    ) -> TaskInfo:
         """
         Starts the dubbing process for a given video URL.
 
@@ -505,7 +520,10 @@ class CambAI:
 
         # Check if the response status code indicates a successful request
         if response.status_code != 200:
-            print("Error: There was an error with your POST request.")
+            print(f"Error: There was a {response.status_code} error with your POST request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Return the response data as a dictionary
         return response.json()
@@ -553,8 +571,13 @@ class CambAI:
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Return the response data as a dictionary
         return response.json()
@@ -582,8 +605,13 @@ class CambAI:
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
 
-        # If the status code is not 200, raise an HTTPError
-        response.raise_for_status()
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Return the response data as a DubbedRunInfo dictionary
         return response.json()
@@ -597,7 +625,7 @@ class CambAI:
         target_language: int,
         polling_interval: float = 2,
         debug: bool = False,
-    ) -> DubbedRunInfo | ErrorResponse:
+    ) -> DubbedRunInfo:
         """
         Starts the dubbing process for a given video and periodically checks the status until it's
         done.
@@ -698,7 +726,7 @@ class CambAI:
         *,
         gender: Gender,
         age: Optional[int] = None,
-    ) -> TaskInfo | ErrorResponse:
+    ) -> TaskInfo:
         """
         Create a text-to-speech (TTS) request.
 
@@ -748,7 +776,10 @@ class CambAI:
 
         # Raise an exception if the request was unsuccessful
         if response.status_code != 200:
-            print("Error: There was an error with your POST request.")
+            print(f"Error: There was a {response.status_code} error with your POST request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Return the JSON response from the API
         return response.json()
@@ -795,8 +826,13 @@ class CambAI:
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url, stream=True)
 
-        # Raise an HTTPError if one occurred
-        response.raise_for_status()
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Check if the output directory exists
         if not os.path.exists(output_directory):
@@ -827,7 +863,7 @@ class CambAI:
         polling_interval: float = 2,
         debug: bool = False,
         output_directory: str = "audio_tts",
-    ) -> Optional[ErrorResponse]:
+    ) -> None:
         """
         This method initiates a Text-to-Speech (TTS) process, monitors its status, and retrieves the
         result when ready.
@@ -914,7 +950,7 @@ class CambAI:
 
     def create_transcription(
         self, /, audio_file: str, language: int
-    ) -> TaskInfo | ErrorResponse:
+    ) -> TaskInfo:
         """
         Creates a transcription request for an audio file with the specified language.
 
@@ -957,7 +993,11 @@ class CambAI:
 
                 # Check if the response status code indicates a successful request
                 if response.status_code != 200:
-                    print("Error: There was an error with your POST request.")
+                    print(f"Error: There was a {response.status_code} error"
+                          "with your POST request.")
+                    print(f"Response: {response.json()}")
+                    print("Kindly fix the issue and try again.")
+                    sys.exit(1)
 
                 # Return the JSON response from the API
                 return response.json()
@@ -968,6 +1008,7 @@ class CambAI:
                 "Please enter a valid file path containing an audio file to send to the API."
             )
             return response.json()
+
 
     def get_transcription_result(
         self, *, run_id: int, save_to_file: bool = False
@@ -1000,11 +1041,10 @@ class CambAI:
 
         # Check if the response status code indicates a successful request
         if response.status_code != 200:
-            # Raise an HTTPError if the request was not successful
-            raise requests.HTTPError(
-                "Error: There was an error with your request."
-                f"Status code: {response.status_code}"
-            )
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # If the save_to_file flag is True, save the transcription result to a JSON file
         if save_to_file:
@@ -1017,6 +1057,7 @@ class CambAI:
         # Return the JSON response as a list of TranscriptionResult objects
         return response.json()
 
+
     def transcribe(
         self,
         *,
@@ -1025,7 +1066,7 @@ class CambAI:
         save_to_file: bool = False,
         polling_interval: float = 2,
         debug: bool = False,
-    ) -> list[TranscriptionResult] | ErrorResponse:
+    ) -> list[TranscriptionResult]:
         """
         Transcribes the given audio file to text in the specified language, optionally saving the
         result to a file.
@@ -1203,7 +1244,10 @@ class CambAI:
 
         # Check for successful response
         if response.status_code != 200:
-            print("Error: There was an error with your POST request.")
+            print(f"Error: There was a {response.status_code} error with your POST request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # Return the JSON response
         return response.json()
@@ -1231,8 +1275,10 @@ class CambAI:
         response: requests.Response = self.session.get(url)
 
         if response.status_code != 200:
-            print("Error: There was an error with your GET request.")
-            return response.json()
+            print(f"Error: There was a {response.status_code} error with your GET request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
 
         # If save_to_file is True, write the translation result to a file
         if save_to_file:
