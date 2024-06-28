@@ -484,7 +484,7 @@ class CambAI:
     # ---------- Dubbing ---------- #
 
     def start_dubbing(
-        self, *, video_url: str, source_language: int = 1, target_language: int
+        self, /, video_url: str, source_language: int, target_language: int
     ) -> TaskInfo:
         """
         Starts the dubbing process for a given video URL.
@@ -622,10 +622,11 @@ class CambAI:
 
     def dub(
         self,
-        *,
+        /,
         video_url: str,
-        source_language: int = 1,
+        source_language: int,
         target_language: int,
+        *,
         polling_interval: float = 2,
         debug: bool = False,
     ) -> DubbedRunInfo:
