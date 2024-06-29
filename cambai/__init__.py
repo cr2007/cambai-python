@@ -292,7 +292,7 @@ class CambAI:
         self.session.headers = {"x-api-key": api_key}
 
 
-    def create_api_endpoint(self, endpoint: str) -> str:
+    def create_api_endpoint(self, /, endpoint: str) -> str:
         """
         Constructs a full API endpoint URL by appending the provided endpoint to the base URL.
 
@@ -308,7 +308,7 @@ class CambAI:
 
 
     def get_languages(
-        self, language_type: Literal["source", "target"], write_to_file: bool = False
+        self, /, language_type: Literal["source", "target"], write_to_file: bool = False
     ) -> list[LanguageOptionsDict]:
         """
         Retrieves a list of languages from the API endpoint based on the type specified.
@@ -434,7 +434,7 @@ class CambAI:
 
 
     def get_all_voices(
-        self, write_to_file: bool = False
+        self, *, write_to_file: bool = False
     ) -> list[Optional[VoicesListDict]]:
         """
         This method sends a GET request to the API endpoint to retrieve all voices.
@@ -533,7 +533,7 @@ class CambAI:
 
 
     def get_task_status(
-        self, task: Literal["tts", "dubbing", "transcription", "translation"], task_id: str
+        self, /, task: Literal["tts", "dubbing", "transcription", "translation"], task_id: str
     ) -> TaskStatus:
         """
         Retrieves the status of a specific task.
@@ -586,7 +586,7 @@ class CambAI:
         return response.json()
 
 
-    def get_dubbed_run_info(self, run_id: int) -> DubbedRunInfo:
+    def get_dubbed_run_info(self, /, run_id: int) -> DubbedRunInfo:
         """
         Retrieves the dubbed run information for a specific run ID.
 
@@ -1017,7 +1017,7 @@ class CambAI:
 
 
     def get_transcription_result(
-        self, *, run_id: int, save_to_file: bool = False
+        self, /, run_id: int, *, save_to_file: bool = False
     ) -> list[TranscriptionResult]:
         """
         Retrieves the transcription result for a given run ID and optionally saves it to a file.
@@ -1066,9 +1066,10 @@ class CambAI:
 
     def transcribe(
         self,
-        *,
+        /,
         audio_file: str,
         language: int,
+        *,
         save_to_file: bool = False,
         polling_interval: float = 2,
         debug: bool = False,
@@ -1161,11 +1162,12 @@ class CambAI:
 
     def create_translation(
         self,
-        *,
+        /,
         source_language: int,
         target_language: int,
         text: str,
         age: int,
+        *,
         formality: Optional[int] = None,
         gender: Optional[Gender] = None,
     ) -> TaskInfo:
