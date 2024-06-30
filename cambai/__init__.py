@@ -1041,7 +1041,7 @@ class CambAI:
         language: int,
         *,
         save_to_file: bool = False,
-        polling_interval: float = 2,
+        polling_interval: float = 20,
         debug: bool = False,
     ) -> list[TranscriptionResult]:
         """
