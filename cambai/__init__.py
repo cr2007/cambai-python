@@ -26,36 +26,6 @@ class APIError(Exception):
     Mostly when a non-200 status code is returned."""
 
 
-# ---------- TypedDict for Error Handling ---------- #
-
-
-class ErrorDetail(TypedDict):
-    """
-    Represents the structure of an error detail in a response.
-
-    Attributes:
-        loc (list[str]): A list of location strings indicating where the error occurred.
-        msg (str): The error message.
-        type (str): The type of error.
-    """
-
-    loc:  list[str]
-    msg:  str
-    type: str
-
-
-class ErrorResponse(TypedDict):
-    """
-    Represents the structure of an error response.
-
-    Attributes:
-        detail (list[ErrorDetail]): A list of error details, each providing specific information
-        about an individual error encountered.
-    """
-
-    detail: list[ErrorDetail]
-
-
 # ---------- Language and Gender Options ---------- #
 
 
