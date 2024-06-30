@@ -292,7 +292,7 @@ class CambAI:
         self.session.headers = {"x-api-key": api_key}
 
 
-    def create_api_endpoint(self, /, endpoint: str) -> str:
+    def __create_api_endpoint(self, /, endpoint: str) -> str:
         """
         Constructs a full API endpoint URL by appending the provided endpoint to the base URL.
 
@@ -326,7 +326,7 @@ class CambAI:
             HTTPError: If the GET request to the API endpoint fails.
         """
         # Construct the API endpoint URL
-        url: str = self.create_api_endpoint(f"{language_type}_languages")
+        url: str = self.__create_api_endpoint(f"{language_type}_languages")
 
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
@@ -390,7 +390,7 @@ class CambAI:
             raise ValueError(f"File '{file}' is not a WAV file.")
 
         # Construct the API endpoint URL
-        url: str = self.create_api_endpoint("create_custom_voice")
+        url: str = self.__create_api_endpoint("create_custom_voice")
 
         # Prepare the data payload with voice properties
         data: VoiceProperties = {
@@ -451,7 +451,7 @@ class CambAI:
         """
 
         # Construct the API endpoint URL for listing voices
-        url: str = self.create_api_endpoint("list_voices")
+        url: str = self.__create_api_endpoint("list_voices")
 
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
@@ -506,7 +506,7 @@ class CambAI:
         """
 
         # Construct the API endpoint URL for end-to-end dubbing
-        url: str = self.create_api_endpoint("end_to_end_dubbing")
+        url: str = self.__create_api_endpoint("end_to_end_dubbing")
 
         # Set the Content-Type header to "application/json"
         self.session.headers["Content-Type"] = "application/json"
@@ -558,13 +558,13 @@ class CambAI:
 
         # Determine the appropriate API endpoint based on the task type
         if task == "dubbing":
-            url: str = self.create_api_endpoint(f"end_to_end_dubbing/{task_id}")
+            url: str = self.__create_api_endpoint(f"end_to_end_dubbing/{task_id}")
         elif task == "tts":
-            url: str = self.create_api_endpoint(f"tts/{task_id}")
+            url: str = self.__create_api_endpoint(f"tts/{task_id}")
         elif task == "transcription":
-            url: str = self.create_api_endpoint(f"create_transcription/{task_id}")
+            url: str = self.__create_api_endpoint(f"create_transcription/{task_id}")
         elif task == "translation":
-            url: str = self.create_api_endpoint(f"create_translation/{task_id}")
+            url: str = self.__create_api_endpoint(f"create_translation/{task_id}")
         else:
             raise ValueError(
                 "Invalid task type. Must be one of 'dubbing', 'tts', 'transcription'"
@@ -603,7 +603,7 @@ class CambAI:
             HTTPError: If the GET request to the API endpoint fails.
         """
         # Construct the API endpoint URL for retrieving the dubbed run information
-        url: str = self.create_api_endpoint(f"dubbed_run_info/{run_id}")
+        url: str = self.__create_api_endpoint(f"dubbed_run_info/{run_id}")
 
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
@@ -760,7 +760,7 @@ class CambAI:
             raise ValueError("Language ID must be between 1 and 148")
 
         # Create the API endpoint URL
-        url: str = self.create_api_endpoint("tts")
+        url: str = self.__create_api_endpoint("tts")
 
         # Prepare the data to be sent in the request
         data: dict = {
@@ -826,7 +826,7 @@ class CambAI:
         """
 
         # Create the API endpoint URL using the provided run_id
-        url: str = self.create_api_endpoint(f"tts_result/{run_id}")
+        url: str = self.__create_api_endpoint(f"tts_result/{run_id}")
 
         # Send a GET request to the API endpoint
         response: requests.Response = self.session.get(url, stream=True)
@@ -982,7 +982,7 @@ class CambAI:
             raise ValueError("Language ID must be between 1 and 148")
 
         # Construct the API endpoint URL
-        url: str = self.create_api_endpoint("create_transcription")
+        url: str = self.__create_api_endpoint("create_transcription")
 
         # Prepare the data payload with the language ID
         data: dict[str, int] = {"language": language}
@@ -1040,7 +1040,7 @@ class CambAI:
         """
 
         # Construct the API endpoint URL using the provided run ID
-        url: str = self.create_api_endpoint(f"transcription_result/{run_id}")
+        url: str = self.__create_api_endpoint(f"transcription_result/{run_id}")
 
         # Perform a GET request to the API endpoint
         response: requests.Response = self.session.get(url)
@@ -1227,7 +1227,7 @@ class CambAI:
             )
 
         # Construct the API endpoint URL
-        url: str = self.create_api_endpoint("create_translation")
+        url: str = self.__create_api_endpoint("create_translation")
 
         # Set the content type for the request
         self.session.headers["Content-Type"] = "application/json"
@@ -1277,7 +1277,7 @@ class CambAI:
         """
 
         # Create the URL for the API endpoint
-        url: str = self.create_api_endpoint(f"translation_result/{run_id}")
+        url: str = self.__create_api_endpoint(f"translation_result/{run_id}")
 
         # Send a GET request to the API endpoint and get the response
         response: requests.Response = self.session.get(url)
