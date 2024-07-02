@@ -10,21 +10,10 @@ This is a Python wrapper for the CambAI API. It is designed to make it easy to i
 <!-- omit from toc -->
 ## Index
 
-- [Checklist](#checklist)
 - [Installation](#installation)
 - [Usage](#usage)
   - [TTS](#tts)
   - [Dubbing](#dubbing)
-
-## Checklist
-
-- [X] Transcription
-  - [X] Overall `transcribe` method
-- [ ] Translation
-  - [ ] Create Translation
-  - [ ] Poll for Translation Status
-  - [ ] Get Translation Result
-  - [ ] Overall `translate` method
 
 ## Installation
 
