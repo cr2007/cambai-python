@@ -267,7 +267,7 @@ class CambAI:
         Constructs a full API endpoint URL by appending the provided endpoint to the base URL.
 
         Args:
-            endpoint (str): The specific API endpoint to be appended to the base URL.
+            `endpoint` (str): The specific API endpoint to be appended to the base URL.
 
         Returns:
             str: The full API endpoint URL.
@@ -281,24 +281,31 @@ class CambAI:
         self, /, language_type: Literal["source", "target"], write_to_file: bool = False
     ) -> list[LanguageOptionsDict]:
         """
-        Retrieves a list of languages from the API endpoint based on the type specified.
+        Fetches the available languages from the API based on the language type.
+
+        This method sends a GET request to the API endpoint to retrieve either source or target
+        languages supported by the service. The languages can optionally be written to a JSON file.
 
         Args:
-            - language_type (Literal["source", "target"]): Specifies the type of languages to
-                retrieve.
-                Can be either "source" for source languages or "target" for target languages.
-            - get_languages (bool, optional): If True, retrieves the languages. Defaults to False.
+            - `language_type` (Literal["source", "target"]): Specifies the type of languages to
+                fetch. Can be either 'source' for source languages or 'target' for target languages.
+            - `write_to_file` (bool, optional): If True, the fetched languages will be written to a
+                JSON file. Defaults to False.
 
         Returns:
-            list[LanguageOptionsDict]: A list of language dictionaries if the request is successful.
+            - list[LanguageOptionsDict]: A list of dictionaries, where each dictionary contains
+            details about a language supported by the service.
 
         Raises:
-            HTTPError: If the GET request to the API endpoint fails.
+            - SystemExit: If the API request is unsuccessful (i.e., does not return a 200 status
+                code), the function prints an error message along with the response details and
+                exits.
         """
-        # Construct the API endpoint URL
+
+        # Construct the API endpoint URL based on the language type
         url: str = self.__create_api_endpoint(f"{language_type}_languages")
 
-        # Send a GET request to the API endpoint
+        # Send a GET request to the constructed URL
         response: requests.Response = self.session.get(url)
 
         # Check for a successful response (status code 200)
@@ -309,6 +316,7 @@ class CambAI:
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
+        # If write_to_file is True, write the response data to a JSON file
         if write_to_file:
             with open(f"{language_type}_languages.json", "w", encoding="utf-8") as file:
                 json.dump(response.json(), file, indent=4)
@@ -316,7 +324,7 @@ class CambAI:
                 f"{language_type} languages written to {language_type}_languages.json"
             )
 
-        # Return the response data as a list of language dictionaries
+        # Return the list of language details as a response
         return response.json()
 
     # ---------- Voices ---------- #
@@ -325,78 +333,85 @@ class CambAI:
         self, *, voice_name: str, gender: Gender, age: Optional[int] = 30, file: str
     ) -> dict[str, str]:
         """
-        Creates a custom voice profile based on the provided parameters.
+        Creates a custom voice profile using the provided voice sample.
 
-        This method sends a request to a predefined API endpoint to create a custom voice profile.
-        It requires a voice name, Gender (as an instance of a Gender Enum), and optionally an age
-        and a file path to an audio sample.
+        This method sends a POST request to the API with the voice sample and properties to create a
+        custom voice profile.
+        The voice properties include the name, gender, and optionally the age of the voice to be
+        created.
 
-        Parameters:
-        - voice_name (str): The name to assign to the custom voice.
-        - gender (Gender): The gender of the voice. Must be an instance of the Gender Enum.
-        - age (int, optional): The age of the voice. Defaults to 30.
-        - file (str): The file path to an audio sample for the custom voice.
+        Args:
+            - `voice_name` (str): The name to assign to the custom voice.
+            - `gender` (Gender): The gender of the voice. Must be an instance of the Gender Enum.
+            - `age` (Optional[int], optional): The age of the voice. Defaults to 30 if not provided.
+            - `file` (str): The file path to the WAV file containing the voice sample.
 
         Returns:
-        - dict[str, int]: A dictionary containing the response from the API.
+            - dict[str, str]: A dictionary containing the response from the API. Typically includes
+            details of the created voice profile.
 
         Raises:
-        - TypeError: If the gender is not an instance of the Gender Enum.
-        - requests.HTTPError: If the response status code from the API is not 200.
+            - TypeError: If the gender is not an instance of the Gender Enum.
+            - ValueError: If the provided file is not a WAV file.
+            - FileNotFoundError: If the specified file does not exist.
+            - requests.exceptions.RequestException: For errors encountered during the API request.
 
         Note:
-        - The 'file' parameter should be a valid path to an audio file.
-        - Ensure the 'Gender' Enum is imported before calling this method.
+            The file must be a WAV file and exist at the specified path for the request to succeed.
         """
 
-        # Check if the gender is an instance of the Gender Enum
+        # Validate the gender argument is an instance of Gender Enum
         if not isinstance(gender, Gender):
             raise TypeError(
                 "Gender must be an instance of Gender Enum.\n",
                 "Make sure you have imported the 'Gender' Enum",
             )
 
+        # Validate the file argument ends with .wav extension
         if not file.endswith(".wav"):
             raise ValueError(f"File '{file}' is not a WAV file.")
 
         # Construct the API endpoint URL
         url: str = self.__create_api_endpoint("create_custom_voice")
 
-        # Prepare the data payload with voice properties
+        # Prepare the data payload for the POST request
         data: VoiceProperties = {
             "voice_name": voice_name,
             "gender": gender.value,
             "age": None
         }
 
+        # If age is provided, add it to the data payload
         if age is not None:
             data["age"] = age
 
-        # Prepare the file to be uploaded using 'with' statement for better resource management
         try:
+            # Open the file in binary read mode and send the POST request
             with open(file, "rb") as file_resource:
-                # Send a POST request to the API with the file and data
                 response: requests.Response = self.session.post(
                     url=url, files={"file": file_resource}, data=data
                 )
 
-                # If the status code is not 200, raise an HTTPError
+                # Check for a successful response (status code 200)
                 if response.status_code != 200:
+                    # Print error details and exit if the request was unsuccessful
                     print(f"Error: There was a {response.status_code} error"
                           "when setting up your custom voice.")
                     print(f"Response: {response.json()}")
                     print("Kindly fix the issue and try again.")
                     sys.exit(1)
 
-                # Return the JSON response from the API
+                # Return the API response as a dictionary
                 return response.json()
         except FileNotFoundError:
+            # Handle the case where the specified file does not exist
             print(
                 "File not found."
                 "Please enter a valid file path containing an audio file to send to the API."
             )
             sys.exit(1)
         except requests.exceptions.RequestException as e:
+            # Handle other exceptions related to the requests library
             print(
                 "There was an exception that occurred while handling your request.", e
             )
@@ -407,23 +422,33 @@ class CambAI:
         self, *, write_to_file: bool = False
     ) -> list[Optional[VoicesListDict]]:
         """
-        This method sends a GET request to the API endpoint to retrieve all voices.
-        If write_to_file is True, it writes the response to a JSON file.
+        Retrieves a list of all available voice options from the API.
+
+        This method sends a GET request to the API to fetch a comprehensive list of voices.
+        Optionally, the list can be written to a JSON file for persistence or further processing.
 
         Args:
-            write_to_file (bool): If True, writes the response to a JSON file. Defaults to False.
+            - `write_to_file` (bool, optional): If True, the retrieved list of voices will be saved
+                to a file named 'voices.json'.\\
+                If 'voices.json' already exists, it will be overwritten. Defaults to False.
 
         Returns:
-            list[Optional[VoicesListDict]]: A list of dictionaries representing voices.
+            - list[Optional[VoicesListDict]]: A list of dictionaries, each representing a voice
+            option. The structure of the dictionaries is defined by the VoicesListDict type hint.
 
         Raises:
-            HTTPError: If the GET request to the API endpoint fails.
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), an
+                error message is printed, and the program exits.
+
+        Note:
+            - The method checks for the existence of 'voices.json' before attempting to write to it,
+            to avoid unintentional data loss. If the file exists, it is first removed.
         """
 
         # Construct the API endpoint URL for listing voices
         url: str = self.__create_api_endpoint("list_voices")
 
-        # Send a GET request to the API endpoint
+        # Send a GET request to the constructed URL
         response: requests.Response = self.session.get(url)
 
         # Check for a successful response (status code 200)
@@ -434,21 +459,20 @@ class CambAI:
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
-        # If write_to_file is True, write the response to a JSON file
+        # If write_to_file is True, write the response data to 'voices.json'
         if write_to_file:
-            # If the file already exists, remove it before writing the new data
+            # Check if 'voices.json' already exists and remove it if it does
             if os.path.exists("voices.json"):
                 print("'voices.json' already exists.")
                 print("Removing the existing file...")
                 os.remove("voices.json")
 
-            # Open the file in write mode
+            # Write the JSON response to 'voices.json'
             with open("voices.json", "w", encoding="utf-8") as file:
-                # Dump the JSON response into the file with indentation for readability
                 json.dump(response.json(), file, indent=4)
-            print("Voices written to voices.json")
+            print("Voices written to 'voices.json'")
 
-        # Return the list of voices as a response
+        # Return the response data as a list of voice dictionaries
         return response.json()
 
     # ---------- Dubbing ---------- #
@@ -457,48 +481,51 @@ class CambAI:
         self, /, video_url: str, source_language: int, target_language: int
     ) -> TaskInfo:
         """
-        Starts the dubbing process for a given video URL.
+        Initiates the dubbing process for a given video from one language to another.
 
-        This method sends a POST request to the "end_to_end_dubbing" endpoint of the Camb AI API.
-        The request includes the video URL, source language, and target language as JSON data.
+        This method sends a POST request to the API with the video URL and the source and target
+        languages specified by their IDs.
+        On success, it returns information about the dubbing task.
 
         Args:
-            - video_url (str): The URL of the video to be dubbed.
-            - source_language (int, optional): The ID of the source language.
-                                                Defaults to 1 - English (US)
-            - target_language (int): The ID of the target language.
+            - `video_url` (str): The URL of the video to be dubbed.
+            - `source_language` (int): The ID of the source language.
+            - `target_language` (int): The ID of the target language.
 
         Returns:
-            - dict: The response from the API as a dictionary.
+            - TaskInfo: A dictionary containing information about the initiated dubbing task, such
+            as task ID and status.
 
         Raises:
-            - HTTPError: If the POST request to the API endpoint fails.
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+            an error message along with the response details and exits the program.
         """
 
-        # Construct the API endpoint URL for end-to-end dubbing
+        # Construct the API endpoint URL for initiating dubbing
         url: str = self.__create_api_endpoint("end_to_end_dubbing")
 
-        # Set the Content-Type header to "application/json"
+        # Set the content type for the request to JSON
         self.session.headers["Content-Type"] = "application/json"
 
-        # Prepare the data to be sent in the POST request
+        # Prepare the data payload for the POST request
         data: dict = {
             "video_url": video_url,
             "source_language": source_language,
             "target_language": target_language,
         }
 
-        # Send a POST request to the API endpoint with the prepared data
+        # Send a POST request with the video URL and language IDs
         response: requests.Response = self.session.post(url=url, json=data)
 
-        # Check if the response status code indicates a successful request
+        # Check for a successful response (status code 200)
         if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your POST request.")
             print(f"Response: {response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
-        # Return the response data as a dictionary
+        # Return the response data as a TaskInfo dictionary
         return response.json()
 
 
@@ -506,21 +533,26 @@ class CambAI:
         self, /, task: Literal["tts", "dubbing", "transcription", "translation"], task_id: str
     ) -> TaskStatus:
         """
-        Retrieves the status of a specific task.
+        Retrieves the status of a specified task by its ID.
 
-        This method sends a GET request to the appropriate endpoint of the Camb
-        AI API based on the task type. The task_id is used to identify the specific task.
+        This method determines the appropriate API endpoint based on the task type and sends a GET
+        request to fetch the current status of the task.
+
+        The task can be of types: text-to-speech (tts), dubbing, transcription, or translation.
 
         Args:
-            - task (str): The type of the task. Must be one of 'dubbing', 'tts', or 'transcription'.
-            - task_id (str): The ID of the task.
+            - `task` (Literal["tts", "dubbing", "transcription", "translation"]): The type of the
+                task for which the status is being requested.
+            - `task_id` (str): The unique identifier of the task.
 
         Returns:
-            - TaskStatus: The status of the task as a dictionary.
+            TaskStatus: A dictionary containing the status of the task, including any relevant
+                details provided by the API.
 
         Raises:
-            - ValueError: If the task type is not valid.
-            - HTTPError: If the GET request to the API endpoint fails.
+            ValueError: If an invalid task type is provided.
+            SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+            an error message along with the response details and exits the program.
         """
 
         # Initialize 'url' with an empty string
@@ -558,20 +590,25 @@ class CambAI:
 
     def get_dubbed_run_info(self, /, run_id: int) -> DubbedRunInfo:
         """
-        Retrieves the dubbed run information for a specific run ID.
+        Retrieves information about a specific dubbed run by its ID.
 
-        This method sends a GET request to the "dubbed_run_info/{run_id}" endpoint of the Camb AI
-        API. The run_id is used to identify the specific run.
+        This method sends a GET request to the API using the run ID to fetch detailed information
+        about the dubbed run.
+        The information includes the status of the dubbing, any errors encountered, and other
+        relevant metadata.
 
         Args:
-            run_id (int): The ID of the run.
+            - `run_id` (int): The unique identifier of the dubbed run.
 
         Returns:
-            DubbedRunInfo: The dubbed run information as a dictionary.
+            DubbedRunInfo: A dictionary containing detailed information about the dubbed run,
+                structured according to the DubbedRunInfo type hint.
 
         Raises:
-            HTTPError: If the GET request to the API endpoint fails.
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+                an error message along with the response details and exits the program.
         """
+
         # Construct the API endpoint URL for retrieving the dubbed run information
         url: str = self.__create_api_endpoint(f"dubbed_run_info/{run_id}")
 
@@ -601,31 +638,34 @@ class CambAI:
         debug: bool = False,
     ) -> DubbedRunInfo:
         """
-        Starts the dubbing process for a given video and periodically checks the status until it's
-        done.
+        Starts the dubbing process for a given video and periodically checks the status until
+        completion.
 
-        This method first sends a request to start the dubbing process. Then, it enters a loop where
-        it periodically checks the status of the dubbing task. If the status is "SUCCESS", it breaks
-        the loop.\n
-        If the status is neither "SUCCESS" nor "PENDING", it raises an APIError. If the run ID is
-        None after the task is successful, it raises an APIError.
+        This method initiates the dubbing process by sending a request with the video URL and the
+        specified source and target languages.
+
+        After initiating the dubbing, it enters a polling loop, checking the dubbing task's status
+        at specified intervals. The loop continues until the task status is "SUCCESS".
+
+        If the task status is neither "SUCCESS" nor "PENDING", an exception is raised. Additionally,
+        if the run ID is not available after the task reaches a "SUCCESS" status, an exception is
+        raised.
 
         Args:
-            - video_url (str): The URL of the video to be dubbed.
-            - source_language (int, optional): The ID of the source language.
-                                                Defaults to 1 - English (US)
-            - target_language (int): The ID of the target language.
-            - polling_interval (int, optional): The interval in seconds between each status check.
-            Defaults to 2 seconds.
-            - debug (bool, optional): If True, prints the task status and run ID at each status
-                                        check. Defaults to False.
+            - `video_url` (str): The URL of the video to be dubbed.
+            - `source_language` (int): The ID of the source language.
+            - `target_language` (int): The ID of the target language.
+            - `polling_interval` (float, optional): The interval, in seconds, between each status
+                check. Defaults to 30 seconds.
+            - `debug` (bool, optional): If True, prints detailed debug information (task status and
+                run ID) at each status check. Defaults to False.
 
         Returns:
-            DubbedRunInfo: The dubbed run information as a dictionary.
+            - DubbedRunInfo: A dictionary containing detailed information about the dubbed run.
 
         Raises:
             APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
-            None.
+            unavailable after the task completes.
         """
 
         # Initialize variables for the dubbing task status and task ID
@@ -702,80 +742,96 @@ class CambAI:
         age: Optional[int] = None,
     ) -> TaskInfo:
         """
-        Create a text-to-speech (TTS) request.
+        Creates a text-to-speech (TTS) task with specified parameters.
+
+        This method sends a POST request to the API to create a TTS task. The request includes
+        mandatory parameters such as the text to be converted, the voice ID, and the language ID.
+
+        Optionally, gender and age can be specified to further customize the voice profile used for
+        the TTS task.
 
         Args:
-            text (str): The text to be converted to speech.
-            voice_id (int): The ID of the voice to be used.
-            language (int): The ID of the language to be used.
-            gender (Gender): The gender of the voice. Must be an instance of the Gender Enum.
-            age (Optional[int]): The age of the voice. If not provided, a default value will be used
-
-        Raises:
-            TypeError: If the gender is not an instance of the Gender Enum.
-            ValueError: If the language ID is not between 1 and 148.
+            - `text` (str): The text to be converted into speech.
+            - `voice_id` (int): The ID of the voice to be used for the TTS task.
+            - `language` (int): The ID of the language in which the text is to be spoken.
+            - `gender` (Optional[Gender], optional): The gender of the voice to be used.
+                This should be an instance of the Gender enum if provided.
+                Defaults to None, which means the API's default gender setting for the selected
+                voice will be used.
+            - `age` (Optional[int], optional): The age of the voice to be used. Defaults to None,
+                which means the API's default age setting for the selected voice will be used.
 
         Returns:
-            dict: The JSON response from the TTS API.
+            - TaskInfo: A dictionary containing information about the created TTS task, such as task
+                ID and status.
+
+        Raises:
+            - TypeError: If the provided gender is not an instance of the Gender enum.
+            - ValueError: If the language ID is not within the valid range (1 to 148).
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+                an error message along with the response details and exits the program.
         """
 
-        # Check if the gender is an instance of the Gender Enum
-        # Validate gender is an instance of Gender Enum, if provided
+        # Validate the gender parameter
         if (gender is not None) and (not isinstance(gender, Gender)):
             raise TypeError("Gender must be an instance of Gender Enum.\n"
                             "Ensure 'Gender' Enum is imported.")
 
-        # Check if the language ID is not within the valid range
+        # Validate the language ID range
         if not 1 <= language <= 148:
             raise ValueError("Language ID must be between 1 and 148")
 
-        # Create the API endpoint URL
+        # Construct the API endpoint URL
         url: str = self.__create_api_endpoint("tts")
 
-        # Prepare the data to be sent in the request
+        # Prepare the data payload for the POST request
         data: dict = {
             "text": text,
             "voice_id": voice_id,
             "language": language,
         }
 
-        # Add optional parameters to the payload, if provided
+        # Include optional parameters in the payload if provided
         if gender is not None:
             data["gender"] = gender.value
         if age is not None:
             data["age"] = age
 
-        # Set the Content-Type header to 'application/json'
+        # Set the request content type to JSON
         self.session.headers["Content-Type"] = "application/json"
 
-        # Send the POST request to the API
+        # Execute the POST request
         response: requests.Response = self.session.post(url=url, json=data)
 
-        # Raise an exception if the request was unsuccessful
+        # Handle unsuccessful request
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your POST request.")
             print(f"Response: {response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
-        # Return the JSON response from the API
+        # Return the API response as a task information dictionary
         return response.json()
 
 
     def get_tts_status(self, /, task_id: str) -> TaskStatus:
         """
-        Get the status of a text-to-speech (TTS) task.
+        Retrieves the status of a text-to-speech (TTS) task by its ID.
+
+        This method is a convenience wrapper around `get_task_status` specifically for TTS tasks.
+
+        It invokes `get_task_status` with the task type set to "tts" and the provided task ID,
+        returning the current status of the TTS task.
 
         Args:
-            task_id (str): The ID of the TTS task.
-
-        Raises:
-            HTTPError: If the GET request to the TTS API fails.
+            - `task_id` (str): The unique identifier of the TTS task.
 
         Returns:
-            TaskStatus: The status of the TTS task.
+            - TaskStatus: A dictionary containing the status of the TTS task, including any relevant
+            details provided by the API.
         """
 
+        # Delegate to the generic get_task_status method, specifying the task type as "tts"
         return self.get_task_status("tts", task_id)
 
 
@@ -841,23 +897,35 @@ class CambAI:
         output_directory: str = "audio_tts",
     ) -> None:
         """
-        This method initiates a Text-to-Speech (TTS) process, monitors its status, and retrieves the
-        result when ready.
+        Initiates a Text-to-Speech (TTS) process and monitors its progress until completion.
 
-        Parameters:
-        - text (str): The text to be converted to speech.
-        - voice_id: The ID of the voice to be used for the TTS.
-        - language (int): The language code for the TTS.
-        - gender (Gender): The gender of the voice for the TTS.
-        - age (Optional[int]): The age of the voice for the TTS. If None, no specific age is set.
-        - polling_interval (float): The interval (in seconds) at which the TTS status is checked.
-          Defaults to 2.
-        - debug (bool): If True, debug information is printed. Defaults to False.
-        - output_directory (str): The directory where the .wav file will be saved. If None, defaults
-          to "audio_tts".
+        This method creates a TTS task with the specified parameters, periodically checks the task's
+        status until it is completed, and then retrieves the resulting audio file, saving it to the
+        specified output directory.
+
+        If the `debug` flag is set, it prints detailed information about the process to the console.
+
+        Args:
+            - `text` (str): The text to be converted into speech.
+            - `voice_id` (int): The ID of the voice to be used for the TTS task.
+            - `language` (int): The ID of the language in which the text is to be spoken.
+            - `gender` (Optional[Gender], optional): The gender of the voice to be used.
+                Defaults to None.
+            - `age` (Optional[int], optional): The age of the voice to be used. Defaults to None.
+            - `polling_interval` (float, optional): The interval, in seconds, between each status
+                check. Defaults to 20 seconds.
+            - `debug` (bool, optional): If True, prints debug information during the process.
+                Defaults to False.
+            - `output_directory` (str, optional): The directory where the resulting audio file will
+                be saved. Defaults to "audio_tts".
 
         Returns:
-        None
+            - None: This method does not return a value but saves the resulting audio file to the
+                specified directory.
+
+        Raises:
+            - APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
+                None after the task completes.
         """
 
         # Initialize task status and task ID
@@ -873,6 +941,7 @@ class CambAI:
             text=text, voice_id=voice_id, language=language, gender=gender, age=age
         )
 
+        # Handle API response errors
         if "detail" in response:
             return response
 
@@ -928,26 +997,30 @@ class CambAI:
         self, /, audio_file: str, language: int
     ) -> TaskInfo:
         """
-        Creates a transcription request for an audio file with the specified language.
+        Creates a transcription task for an audio file with the specified language.
 
-        This method sends an audio file to a predefined API endpoint for transcription. The API
-        expects the language to be specified as an integer ID within a valid range. The method
-        checks if the provided language ID is within the valid range before sending the request.
+        This method sends a POST request to the API to create a transcription task. The request
+        includes the audio file and the language ID.
 
-        Parameters:
-            - `audio_file` (str): The file path of the audio file to be transcribed.
-            - `language` (int): The language ID for the transcription, must be within 1 to 148.
+        The language ID must be within the valid range. If the request is successful, it returns the
+        JSON response from the API, which contains details about the transcription task.
+
+        Args:
+            - `audio_file` (str): The path to the audio file to be transcribed.
+            - `language` (int): The ID of the language in which the audio is spoken.
 
         Returns:
-            - `dict[str, str]`: The JSON response from the API if successful. If an error occurs, a
-            dictionary with an appropriate error message is returned.
+            - TaskInfo: A dictionary containing information about the created transcription task,
+                such as task ID and status.
 
         Raises:
-            - `ValueError`: If the language ID is not within the valid range.
-            - `FileNotFoundError`: If the specified audio file does not exist.
+            - ValueError: If the language ID is not within the valid range.
+            - FileNotFoundError: If the specified audio file does not exist.
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code),
+                prints an error message along with the response details and exits the program.
         """
 
-        # Check if the language ID is not within the valid range
+        # Validate the language ID range
         if not 1 <= language <= 148:
             raise ValueError("Language ID must be between 1 and 148")
 
@@ -970,7 +1043,7 @@ class CambAI:
                 # Check if the response status code indicates a successful request
                 if response.status_code != 200:
                     print(f"Error: There was a {response.status_code} error"
-                          "with your POST request.")
+                          " with your POST request.")
                     print(f"Response: {response.json()}")
                     print("Kindly fix the issue and try again.")
                     sys.exit(1)
@@ -981,9 +1054,9 @@ class CambAI:
             # Handle the case where the specified audio file does not exist
             print(
                 "File not found."
-                "Please enter a valid file path containing an audio file to send to the API."
+                " Please enter a valid file path containing an audio file to send to the API."
             )
-            return response.json()
+            sys.exit(1)
 
 
     def get_transcription_result(
@@ -992,21 +1065,25 @@ class CambAI:
         """
         Retrieves the transcription result for a given run ID and optionally saves it to a file.
 
-        This method contacts a predefined API endpoint to fetch the transcription result associated
-        with a specific run ID. If the `save_to_file` flag is set to True, the method will also save
-        the transcription result to a JSON file on disk.
+        This method sends a GET request to the API to fetch the transcription result associated with
+        the specified run ID.\\
+        If the `save_to_file` parameter is set to True, the method also saves the transcription
+        result to a local JSON file named `transcription_result_{run_id}.json`.
 
-        Parameters:
-            - `run_id` (int): The unique identifier for the transcription run.
-            - `save_to_file` (bool): A flag indicating whether to save the transcription result to a
-                                 file. Defaults to False.
+        The method returns the transcription result as a list of `TranscriptionResult` objects.
+
+        Args:
+            - `run_id` (int): The run ID of the transcription task whose result is to be fetched.
+            - `save_to_file` (bool, optional): A flag indicating whether to save the transcription
+                result to a file. Defaults to False.
 
         Returns:
-            - list[TranscriptionResult]: A list of transcription results. Each result is represented
-                                       as a `TranscriptionResult` object.
+            - list[TranscriptionResult]: A list of `TranscriptionResult` objects representing the
+                transcription result.
 
         Raises:
-            - HTTPError: If the request to the API endpoint does not return a 200 status code.
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+                an error message along with the response details and exits the program.
         """
 
         # Construct the API endpoint URL using the provided run ID
@@ -1045,32 +1122,34 @@ class CambAI:
         debug: bool = False,
     ) -> list[TranscriptionResult]:
         """
-        Transcribes the given audio file to text in the specified language, optionally saving the
-        result to a file.
+        Transcribes the given audio file to text in the specified language, with options to save and
+        debug.
 
-        This method initiates a transcription task for an audio file, periodically checks for the
-        task's completion,
-        and retrieves the transcription result. It supports optional debugging output and can save
-        the transcription results to a file if requested.
+        This method initiates a transcription task for the provided audio file in the specified
+        language. It periodically checks the status of the task at intervals defined by
+        `polling_interval`.
 
-        Parameters:
-            - audio_file (str): The path to the audio file to be transcribed.
-            - language (int): The language code for the transcription service to use.
-            - save_to_file (bool): If True, saves the transcription result to a file. Defaults to
-                                   False.
-            - polling_interval (float): The time interval, in seconds, between status checks of the
-                                       transcription task.
-                                       Defaults to 2 seconds.
-            - debug (bool): If True, prints debugging information during the transcription process.
-                          Defaults to False.
+        If `debug` is True, it prints the task's status during these checks.
+
+        Once the task is completed successfully, it retrieves the transcription result.
+        If `save_to_file` is True, the result is also saved to a local file.
+
+        Args:
+            - `audio_file` (str): The path to the audio file to be transcribed.
+            - `language` (int): The ID of the language in which the audio is spoken.
+            - `save_to_file` (bool, optional): If True, saves the transcription result to a file.
+                Defaults to False.
+            - `polling_interval` (float, optional): The time in seconds between status checks of the
+                transcription task. Defaults to 20 seconds.
+            - `debug` (bool, optional): If True, prints debug information during the transcription
+                process. Defaults to False.
 
         Returns:
-            - list[TranscriptionResult]: A list of transcription results, each represented as a
-              `TranscriptionResult` object.
+            - list[TranscriptionResult]: A list of transcription results.
 
         Raises:
-            APIError: If the transcription task fails or if the run ID is None after the task
-                      completes.
+            - APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
+                None after the task completes.
         """
 
         task: TaskStatus
@@ -1083,9 +1162,11 @@ class CambAI:
 
         print(f"Transcription Task Started: {response}")
 
+        # Check for errors in the response
         if "detail" in response:
             return response
 
+        # Extract the task ID from the response
         task_id = response["task_id"]
 
         while True:
@@ -1095,15 +1176,13 @@ class CambAI:
             if debug:
                 print(f"Task Status: {task['status']}, Run ID: {task['run_id']}")
 
+            # Exit the loop if the task is successfully completed
             if task["status"] == "SUCCESS":
-                # Exit the loop if the task is successfully completed
                 break
 
+            # Raise an error if the task status indicates a failure
             if task["status"] not in ["SUCCESS", "PENDING"]:
-                # Raise an error if the task status indicates a failure
-                raise APIError(
-                    f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}"
-                )
+                raise APIError(f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}")
 
             if debug:
                 print(f"Sleeping for {polling_interval} seconds")
@@ -1149,12 +1228,12 @@ class CambAI:
         It returns the response in JSON format.
 
         Parameters:
-            - source_language (int): The ID of the source language.
-            - target_language (int): The ID of the target language.
-            - text (str): The text to be translated.
-            - age (int): The age of the text's intended audience.
-            - formality (Optional[int]): The formality level of the translation, if applicable.
-            - gender (Optional[Gender]): The gender of the text's intended audience, if applicable.
+            - `source_language` (int): The ID of the source language.
+            - `target_language` (int): The ID of the target language.
+            - `text` (str): The text to be translated.
+            - `age` (int): The age of the text's intended audience.
+            - `formality` (int, optional): The formality level of the translation, if applicable.
+            - `gender` (Gender, optional): The gender of the text's intended audience, if applicable
 
         Returns:
             - dict[str, str]: The response from the translation API in JSON format.
@@ -1164,7 +1243,7 @@ class CambAI:
                           range.
 
         Note:
-            - The `source_language` and `target_language` IDs must be within the range [1, 148].
+            - The `source_language` and `target_language` IDs must be within the valid range.
             - The `formality` parameter, if provided, must be either 1 or 2.
             - The `gender` parameter, if provided, must be an instance of the `Gender` enum.
         """
@@ -1238,9 +1317,8 @@ class CambAI:
         Retrieves the translation result for a given run ID.
 
         Args:
-            self (object): The instance of the class.
-            run_id (int): The ID of the translation run.
-            save_to_file (bool): Whether to save the result to a file. Defaults to False.
+            `run_id` (int): The ID of the translation run.
+            `save_to_file` (bool): Whether to save the result to a file. Defaults to False.
 
         Returns:
             TranslationResult: The translation result as a dictionary.
