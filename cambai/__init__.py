@@ -1310,6 +1310,25 @@ class CambAI:
         return response.json()
 
 
+    def get_translation_status(self, /, task_id: str) -> TaskStatus:
+        """Retrieves the status of a translation task by its ID.
+
+        This method is a convenience wrapper around `get_task_status` specifically for translation
+        tasks.\\
+        It invokes `get_task_status` with the task type set to "translation" and the provided
+        task ID, returning the current status of the translation task.
+
+        Args:
+            - `task_id` (str): The unique identifier of the translation task.
+
+        Returns:
+            - TaskStatus: A dictionary containing the status of the translation task, including any
+                relevant details provided by the API.
+        """
+
+        return self.get_task_status("translation", task_id)
+
+
     def get_translation_result(
         self, /, run_id: int, *, save_to_file: bool = False
     ) -> TranslationResult:
