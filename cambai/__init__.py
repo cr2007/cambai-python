@@ -223,9 +223,41 @@ class TranslationResult(TypedDict):
 
 
 class BasicTranslationTTSData(BasicTranslationData, total=True):
+    """
+    Represents the data model for basic translation with Text-to-Speech (TTS) information.
+
+    This class extends `BasicTranslationData` by including TTS-specific information, such as the
+    voice ID used for the TTS output.\\
+    It is designed to be used in scenarios where translation output needs to be synthesized into
+    speech, requiring a specific voice.
+
+    Attributes:
+        - `voice_id` (int): An identifier for the voice to be used in TTS synthesis. This ID
+        corresponds to a specific voice in the TTS system.
+    """
+
     voice_id: int
 
+
 class ExtendedTranslationTTSData(BasicTranslationTTSData, total=False):
+    """
+    Extends BasicTranslationTTSData with optional attributes for more detailed TTS customization.
+
+    This class builds upon `BasicTranslationTTSData` by introducing additional optional attributes
+    that allow for more granular control over the Text-to-Speech (TTS) output. These attributes
+    include age, formality, and gender, enabling users to tailor the TTS voice to better suit the
+    context or audience of the translation.
+
+    Attributes:
+        - `age` (Optional[int]): Specifies the desired age group of the TTS voice. This can
+            influence the perceived age of the voice in the TTS output.
+        - `formality` (Optional[int]): Indicates the desired level of formality for the TTS voice.
+            This can affect the speaking style, potentially making it more formal or casual
+            depending on the value.
+        - `gender` (Optional[int]): Specifies the desired gender of the TTS voice. This allows for
+            the selection of a voice that aligns with a specific gender identity.
+    """
+
     age:       Optional[int]
     formality: Optional[int]
     gender:    Optional[int]
