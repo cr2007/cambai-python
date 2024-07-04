@@ -1468,6 +1468,6 @@ class CambAI:
         save_to_file: bool = False,
     ) -> TranslationResult:
 
-        self.get_tts_result(run_id)
+        self.get_tts_result(run_id, output_directory=output_directory)
 
         return self.get_translation_result(run_id, save_to_file=save_to_file)
