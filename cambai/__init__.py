@@ -218,6 +218,18 @@ class TranslationResult(TypedDict):
 
     text: str
 
+
+# ---------- Translation TTS Information ---------- #
+
+
+class BasicTranslationTTSData(BasicTranslationData, total=True):
+    voice_id: int
+
+class ExtendedTranslationTTSData(BasicTranslationTTSData, total=False):
+    age:       Optional[int]
+    formality: Optional[int]
+    gender:    Optional[int]
+
 # ------------------------------------------------------------------------------------------------ #
 
 
@@ -530,7 +542,10 @@ class CambAI:
 
 
     def get_task_status(
-        self, /, task: Literal["tts", "dubbing", "transcription", "translation"], task_id: str
+        self,
+        /,
+        task: Literal["tts", "dubbing", "transcription", "translation", "translated_tts"],
+        task_id: str
     ) -> TaskStatus:
         """
         Retrieves the status of a specified task by its ID.
@@ -567,10 +582,12 @@ class CambAI:
             url: str = self.__create_api_endpoint(f"create_transcription/{task_id}")
         elif task == "translation":
             url: str = self.__create_api_endpoint(f"create_translation/{task_id}")
+        elif task == "translated_tts":
+            url: str = self.__create_api_endpoint(f"create_translated_tts/{task_id}")
         else:
             raise ValueError(
-                "Invalid task type. Must be one of 'dubbing', 'tts', 'transcription'"
-                "or 'translation'"
+                "Invalid task type. Must be one of 'dubbing', 'tts', 'transcription', "
+                "'translation', or 'translated_tts'."
             )
 
         # Send a GET request to the API endpoint
@@ -1365,3 +1382,92 @@ class CambAI:
                 file.write(response.json()["text"])
 
         return response.json()
+
+    # ---------- Translated TTS ---------- #
+
+    def create_translated_tts(
+        self,
+        /,
+        text: str,
+        voice_id: int,
+        source_language: int,
+        target_language: int,
+        *,
+        age: Optional[int] = None,
+        formality: Optional[int] = None,
+        gender: Optional[Gender] = None,
+    ) -> TaskInfo:
+
+        # Validate source language ID
+        if not 1 <= source_language <= 148:
+            raise ValueError(
+                "create_translated_tts: Source Language must be an integer"
+                "value between 1 and 148. To know more, call"
+                "the 'get_languages(\"source\")' function"
+            )
+
+        # Validate target language ID
+        if not 1 <= target_language <= 148:
+            raise ValueError(
+                "create_translated_tts: Target Language must be an integer value"
+                "between 1 and 148. To know more, call the"
+                "'get_languages(\"target\")' function"
+            )
+
+        # Validate formality, if provided
+        if (formality is not None) and (formality not in {1, 2}):
+            raise ValueError("create_translated_tts: formality must be one of {1, 2}")
+
+        # Check if the gender is an instance of the Gender Enum
+        if (gender is not None) and (not isinstance(gender, Gender)):
+            raise TypeError(
+                "Gender must be an instance of Gender Enum.\n",
+                "Make sure you have imported the 'Gender' Enum",
+            )
+
+        url: str = self.__create_api_endpoint("create_translated_tts")
+
+        self.session.headers["Content-Type"] = "application/json"
+
+        data: ExtendedTranslationTTSData = {
+            "text": text,
+            "voice_id": voice_id,
+            "source_language": source_language,
+            "target_language": target_language,
+        }
+
+        if age is not None:
+            data["age"] = age
+        if formality is not None:
+            data["formality"] = formality
+        if gender is not None:
+            data["gender"] = gender
+
+        response: requests.Response = self.session.post(url=url, json=data)
+
+        # Check for successful response
+        if response.status_code != 200:
+            print(f"Error: There was a {response.status_code} error with your POST request.")
+            print(f"Response: {response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
+
+        return response.json()
+
+
+    def get_translated_tts_status(self, /, task_id: str) -> TaskStatus:
+        return self.get_task_status("translated_tts", task_id)
+
+
+    def get_translated_tts_result(
+        self,
+        /,
+        run_id: int,
+        *,
+        output_directory: str = "audio_tts",
+        save_to_file: bool = False,
+    ) -> TranslationResult:
+
+        self.get_tts_result(run_id)
+
+        return self.get_translation_result(run_id, save_to_file=save_to_file)
