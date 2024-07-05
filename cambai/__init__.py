@@ -723,9 +723,6 @@ class CambAI:
 
         print(f"Dubbing Task Started: {response}")
 
-        if "detail" in response:
-            return response
-
         # Extract the task ID from the response
         task_id = response["task_id"]
 
@@ -981,10 +978,6 @@ class CambAI:
             text=text, voice_id=voice_id, language=language, gender=gender, age=age
         )
 
-        # Handle API response errors
-        if "detail" in response:
-            return response
-
         # Print the response containing the task ID from the TTS task creation
         print(f"TTS Task Started: {response}\n")
 
@@ -1201,10 +1194,6 @@ class CambAI:
         response = self.create_transcription(audio_file, language)
 
         print(f"Transcription Task Started: {response}")
-
-        # Check for errors in the response
-        if "detail" in response:
-            return response
 
         # Extract the task ID from the response
         task_id = response["task_id"]
