@@ -180,9 +180,9 @@ class BasicTranslationData(TypedDict, total=True):
     Represents the basic data required for a translation request.
 
     Attributes:
-        - source_language (int): The ID of the source language.
-        - target_language (int): The ID of the target language.
-        - text (str): The text to be translated.
+        - `source_language` (int): The ID of the source language.
+        - `target_language` (int): The ID of the target language.
+        - `text` (str): The text to be translated.
     """
 
     source_language: int
@@ -195,11 +195,11 @@ class ExtendedTranslationData(BasicTranslationData, total=False):
     Extends BasicTranslationData with optional parameters for a more customized translation request.
 
     Attributes:
-        - age (Optional[int]): The age of the text's intended audience. Used to tailor the
+        - `age` (Optional[int]): The age of the text's intended audience. Used to tailor the
                                translation.
-        - formality (Optional[int]): The formality level of the translation. Can be informal or
+        - `formality` (Optional[int]): The formality level of the translation. Can be informal or
                                      formal.
-        - gender (Optional[int]): The gender of the text's intended audience. Used to adjust the
+        - `gender` (Optional[int]): The gender of the text's intended audience. Used to adjust the
                                   translation accordingly.
     """
 
@@ -213,7 +213,7 @@ class TranslationResult(TypedDict):
     Represents the result of a translation operation.
 
     Attributes:
-        text (str): The translated text.
+        - `text` (str): The translated text.
     """
 
     text: str
@@ -272,15 +272,6 @@ class CambAI:
     This class provides methods for various operations including retrieving languages and voices,
     starting the dubbing process for a video, checking the status of a dubbing task, and retrieving
     dubbed run information.
-
-    Attributes:
-        CAMB_URL (str): The base URL for the Camb AI API.
-        session (requests.Session): The session used for API requests.
-
-    Raises:
-        APIKeyMissingError: If the API key is not provided during initialization.
-        HTTPError: If a request to the API fails.
-        APIError: If there is an issue with the dubbing process.
     """
 
     def __init__(self, *, api_key: Optional[str] = None) -> None:
@@ -1429,6 +1420,36 @@ class CambAI:
         formality: Optional[int] = None,
         gender: Optional[Gender] = None,
     ) -> TaskInfo:
+        """
+        Creates a translation with Text-to-Speech (TTS) from source to target language with optional
+        voice customization.
+
+        This method translates the given text from the source language to the target language and
+        synthesizes the translation into speech using the specified voice ID.\\
+        Optional parameters allow for customization of the TTS output, including the age, formality,
+        and gender of the voice.
+
+        Args:
+            - `text` (str): The text to be translated and synthesized.
+            - `voice_id` (int): The ID of the voice to be used for TTS.
+            - `source_language` (int): The ID of the source language.
+            - `target_language` (int): The ID of the target language.
+            - `age` (int, optional): The desired age group for the TTS voice.
+            - `formality` (int, optional): The desired level of formality for the TTS
+                voice.
+            - `gender` (Gender, optional): The desired gender for the TTS voice.
+
+        Returns:
+            - TaskInfo: A dictionary containing information about the TTS task, including status and
+                any results.
+
+        Raises:
+            - ValueError: If the source or target language IDs are not within the valid range
+                (1-148).
+            - ValueError: If the formality value is provided but is not one of the valid options
+                (1, 2).
+            - TypeError: If the gender is provided but is not an instance of the Gender Enum.
+        """
 
         # Validate source language ID
         if not 1 <= source_language <= 148:
@@ -1457,10 +1478,13 @@ class CambAI:
                 "Make sure you have imported the 'Gender' Enum",
             )
 
+        # Construct the API endpoint URL
         url: str = self.__create_api_endpoint("create_translated_tts")
 
+        # Set the content type for the request
         self.session.headers["Content-Type"] = "application/json"
 
+        # Prepare the data payload for the POST request
         data: ExtendedTranslationTTSData = {
             "text": text,
             "voice_id": voice_id,
@@ -1468,6 +1492,7 @@ class CambAI:
             "target_language": target_language,
         }
 
+        # Add optional parameters to the data payload if provided
         if age is not None:
             data["age"] = age
         if formality is not None:
@@ -1475,6 +1500,7 @@ class CambAI:
         if gender is not None:
             data["gender"] = gender
 
+        # Make the POST request to the API endpoint
         response: requests.Response = self.session.post(url=url, json=data)
 
         # Check for successful response
@@ -1484,10 +1510,27 @@ class CambAI:
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
+        # Return the Task Info
         return response.json()
 
 
     def get_translated_tts_status(self, /, task_id: str) -> TaskStatus:
+        """Retrieves the status of a translation task by its ID.
+
+        This method is a convenience wrapper around `get_task_status` specifically for translation
+        TTS tasks.\\
+        It invokes `get_task_status` with the task type set to "translation_tts" and the provided
+        task ID, returning the current status of the translation task.
+
+        Args:
+            - `task_id` (str): The unique identifier of the TTS translation task whose status is
+                being queried.
+
+        Returns:
+            - TaskStatus: An object containing the current status of the task, including whether it
+                is pending, in progress, or completed.
+        """
+
         return self.get_task_status("translated_tts", task_id)
 
 
@@ -1499,7 +1542,30 @@ class CambAI:
         output_directory: str = "audio_tts",
         save_to_file: bool = False,
     ) -> TranslationResult:
+        """
+        Retrieves the result of a translated Text-to-Speech (TTS) task and optionally saves the
+        audio file.
 
+        This method fetches the result of a TTS translation task using its run ID.\\
+        It can also save the resulting audio file to a specified directory.
+        The method first retrieves the TTS audio result and then fetches the translation text
+        result.
+
+        Args:
+            - `run_id` (int): The unique identifier of the TTS translation task.
+            - `output_directory` (str, optional): The directory where the audio file will be saved
+                if `save_to_file` is True. Defaults to "audio_tts".
+            - `save_to_file` (bool, optional): If True, the audio file will be saved to the
+                specified `output_directory`. Defaults to False.
+
+        Returns:
+            - TranslationResult: An object containing the translation text result and, if requested,
+                the path to the saved audio file.
+        """
+
+        # Retrieve and optionally save the TTS audio result
         self.get_tts_result(run_id, output_directory=output_directory)
 
+        # Retrieve and return the translation text result,
+        # including the path to the saved audio file if applicable
         return self.get_translation_result(run_id, save_to_file=save_to_file)
