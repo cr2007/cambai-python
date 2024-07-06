@@ -1395,6 +1395,100 @@ class CambAI:
 
         return response.json()
 
+
+    def translate(
+        self,
+        /,
+        text: str,
+        source_language: int,
+        target_language: int,
+        age: int,
+        *,
+        formality: Optional[int] = None,
+        gender: Optional[Gender] = None,
+        polling_interval: float = 10,
+        save_to_file: bool = False,
+        debug: bool = False,
+    ) -> TranslationResult:
+        """
+        Translates text from a source language to a target language, with optional parameters to
+        customize the request.
+
+        This method initiates a translation task, polls for its completion, and retrieves the
+        result.\\
+        It supports customization of the translation through parameters like age, formality, and
+        gender.\\
+        It also allows for the result to be saved to a file if desired.
+
+        Parameters:
+            - `text` (str): The text to be translated.
+            - `source_language` (int): The language code of the source text.
+            - `target_language` (int): The language code for the translation output.
+            - `age` (int): Age parameter to customize the translation request.
+            - `formality` (int, optional): Optional formality level for the translation.
+            - `gender` (Gender, optional): Optional gender to customize the translation request.
+            - `polling_interval` (float): Time in seconds between status checks of the translation
+                task. Defaults to 10.
+            - `save_to_file` (bool): Flag to save the translation output as a file. Defaults to
+                False.
+            - `debug` (bool): Enables detailed logging if set to True. Defaults to False.
+
+        Returns:
+            - TranslationResult: The result of the translation process, including any file
+                information if saved.
+
+        Raises:
+            - APIError: If the task fails or if there is an issue retrieving the result.
+        """
+
+        task: TaskStatus
+        task_id: str
+
+        print("Starting Translation")
+
+        # Initiate the translation task with the provided parameters
+        response = self.create_translation(
+            text, source_language, target_language, age, formality=formality, gender=gender
+        )
+
+        print(f"Translation Task Started: {response}")
+
+        task_id = response["task_id"]
+
+        while True:
+            # Check the current status of the translation task
+            task = self.get_task_status("translation", task_id)
+
+            if debug:
+                print(f"Task Status: {task['status']}, Run ID: {task['run_id']}")
+
+            # Exit the loop if the task is successfully completed
+            if task["status"] == "SUCCESS":
+                break
+
+            # Raise an error if the task status indicates a failure
+            if task["status"] not in ["SUCCESS", "PENDING"]:
+                raise APIError(f"Translation Issue: {task['status']} for Run ID: {task['run_id']}")
+
+            if debug:
+                print(f"Sleeping for {polling_interval} seconds")
+
+            # Wait for the specified polling interval before checking the task status again
+            for _ in tqdm(
+                range(math.ceil(polling_interval)),
+                unit="s",
+                desc=f"Waiting {polling_interval} seconds before checking status again",
+            ):
+                sleep(1)
+
+        task = self.get_task_status("translation", task_id)
+
+        if task["run_id"] is None:
+            raise APIError("Run ID is None")
+
+        # Retrieve and return the final translation result
+        return self.get_translation_result(task["run_id"], save_to_file=save_to_file)
+
     # ---------- Translated TTS ---------- #
 
     def create_translated_tts(
