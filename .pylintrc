@@ -438,8 +438,9 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-zero,
         redefined-builtin,
         missing-module-docstring,
-        too-many-arguments, ; Need to be edited later on to remove this line
-        too-many-lines, ; Should fix this later on
+        too-many-arguments,      ; Need to be edited later on to remove this line
+        too-many-lines,          ; Should fix this later on
+        too-many-public-methods, ; Should really fix this later on
         too-few-public-methods,
         unrecognized-option,
         unknown-option-value
