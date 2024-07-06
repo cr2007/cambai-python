@@ -347,7 +347,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -432,7 +432,8 @@ class CambAI:
                     # Print error details and exit if the request was unsuccessful
                     print(f"Error: There was a {response.status_code} error"
                           "when setting up your custom voice.")
-                    print(f"Response: {response.json()}")
+                    print("Response: "
+                          f"{response.text if response.status_code == 500 else response.json()}")
                     print("Kindly fix the issue and try again.")
                     sys.exit(1)
 
@@ -490,7 +491,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -556,7 +557,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your POST request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -620,7 +621,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -659,7 +660,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -843,7 +844,7 @@ class CambAI:
         # Handle unsuccessful request
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your POST request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -898,7 +899,7 @@ class CambAI:
         if response.status_code != 200:
             # Print error details and exit if the request was unsuccessful
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -1077,7 +1078,8 @@ class CambAI:
                 if response.status_code != 200:
                     print(f"Error: There was a {response.status_code} error"
                           " with your POST request.")
-                    print(f"Response: {response.json()}")
+                    print("Response: "
+                          f"{response.text if response.status_code == 500 else response.json()}")
                     print("Kindly fix the issue and try again.")
                     sys.exit(1)
 
@@ -1128,7 +1130,7 @@ class CambAI:
         # Check if the response status code indicates a successful request
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -1333,7 +1335,7 @@ class CambAI:
         # Check for successful response
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your POST request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -1382,7 +1384,7 @@ class CambAI:
 
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your GET request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
@@ -1591,7 +1593,7 @@ class CambAI:
         # Check for successful response
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your POST request.")
-            print(f"Response: {response.json()}")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
