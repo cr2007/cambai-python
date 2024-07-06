@@ -1558,3 +1558,100 @@ class CambAI:
         # Retrieve and return the translation text result,
         # including the path to the saved audio file if applicable
         return self.get_translation_result(run_id, save_to_file=save_to_file)
+
+
+    def translate_tts(
+        self,
+        /,
+        text: str,
+        voice_id: int,
+        source_language: int,
+        target_language: int,
+        *,
+        age: Optional[int] = None,
+        formality: Optional[int] = None,
+        gender: Optional[Gender] = None,
+        output_directory: str = "audio_tts",
+        save_to_file: bool = False,
+        polling_interval: float = 20,
+        debug: bool = False
+    ) -> TranslationResult:
+        """
+        Translates text to speech in a target language and optionally saves the audio file.
+
+        This method initiates a translated text-to-speech (TTS) task, polls for its completion,
+        and retrieves the result. It supports customization of the voice through parameters like
+        age, formality, and gender. It also allows for the audio to be saved to a specified
+        directory.
+
+        Parameters:
+            - `text` (str): The text to be translated and converted to speech.
+            - `voice_id` (int): Identifier for the voice type to be used in the TTS.
+            - `source_language` (int): Language code of the input text.
+            - `target_language` (int): Language code for the translation and TTS output.
+            - `age` (int, optional): Optional age parameter to customize the voice.
+            - `formality` (int, optional): Optional formality level for the voice.
+            - `gender` (Gender, optional): Optional gender to customize the voice.
+            - `output_directory` (str): Directory where the audio file will be saved. Defaults to
+                "audio_tts".
+            - `save_to_file` (bool): Flag to save the audio output as a file. Defaults to False.
+            - `polling_interval` (float): Time in seconds between status checks of the TTS task.
+                Defaults to 20.
+            - `debug` (bool): Enables detailed logging if set to True. Defaults to False.
+
+        Returns:
+            - TranslationResult: The result of the translation and TTS process, including any audio
+                file information.
+
+        Raises:
+            - APIError: If the task fails or if there is an issue retrieving the result.
+        """
+
+        task: TaskStatus
+        task_id: str
+
+        print("Starting Translated TTS")
+
+        # Create a translated TTS task with the provided parameters
+        response = self.create_translated_tts(
+            text, voice_id, source_language, target_language,
+            age=age, formality=formality, gender=gender
+        )
+
+        print(f"Translated TTS Task Started: {response}")
+
+        task_id = response["task_id"]
+
+        # Poll for task completion, with optional debug logging
+        while True:
+            task = self.get_task_status("translated_tts", task_id)
+
+            if debug:
+                print(f"Task Status: {task['status']}, Run ID: {task['run_id']}")
+
+            if task["status"] == "SUCCESS":
+                break
+
+            if task["status"] not in ["SUCCESS", "PENDING"]:
+                raise APIError(f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}")
+
+            if debug:
+                print(f"Sleeping for {polling_interval} seconds")
+
+            # Wait for the specified polling interval before checking the task status again
+            for _ in tqdm(
+                range(math.ceil(polling_interval)),
+                unit="s",
+                desc=f"Waiting {polling_interval} seconds before checking status again",
+            ):
+                sleep(1)
+
+        task = self.get_task_status("translated_tts", task_id)
+
+        if task["run_id"] is None:
+            raise APIError("Run ID is None")
+
+        # Retrieve and return the final translated TTS result
+        return self.get_translated_tts_result(
+            task["run_id"], output_directory=output_directory, save_to_file=save_to_file
+        )
