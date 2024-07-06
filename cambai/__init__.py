@@ -1211,7 +1211,9 @@ class CambAI:
 
             # Raise an error if the task status indicates a failure
             if task["status"] not in ["SUCCESS", "PENDING"]:
-                raise APIError(f"Dubbing Issue: {task['status']} for Run ID: {task['run_id']}")
+                raise APIError(
+                    f"Transcription Issue: {task['status']} for Run ID: {task['run_id']}"
+                )
 
             if debug:
                 print(f"Sleeping for {polling_interval} seconds")
@@ -1241,9 +1243,9 @@ class CambAI:
     def create_translation(
         self,
         /,
+        text: str,
         source_language: int,
         target_language: int,
-        text: str,
         age: int,
         *,
         formality: Optional[int] = None,
