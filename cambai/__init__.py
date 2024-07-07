@@ -119,7 +119,7 @@ class TaskStatus(TypedDict):
             - "TIMEOUT": The task timed out before completion.
             - "ERROR": An error occurred during the task.
             - "PAYMENT_REQUIRED": Payment is required to complete the task.
-        - run_id (Optional[int]): The unique identifier for the task run. It can be None if the task
+        - run_id (int, Optional): The unique identifier for the task run. It can be None if the task
           has not started yet.
     """
 
@@ -135,8 +135,9 @@ class TranscriptionResult(TypedDict):
     Represents a single transcription result.
 
     This class is a TypedDict used for type hinting purposes, defining the structure of a
-    transcription result. It includes the start and end times of the spoken segment, the transcribed
-    text, and the identified speaker.
+    transcription result.\\
+    It includes the start and end times of the spoken segment, the transcribed text, and the
+    identified speaker.
 
     Attributes:
         - start (float): The start time of the transcribed segment, in seconds.
@@ -156,15 +157,14 @@ class TranscriptionResult(TypedDict):
 
 class DubbedRunInfo(TypedDict):
     """
-    Represents information about a dubbed run, including URLs for the video and audio,
-    and the transcription results.
+    Represents information about a dubbed run, including URLs for the video and audio, and the
+    transcription results.
 
     Attributes:
-        - video_url (`str`): The URL of the video associated with the dubbed run.
-        - audio_url (`str`): The URL of the audio track used in the dubbed video.
-        - transcript (`list[TranscriptionResult]`): A list of transcription results,
-                                                each representing a segment of the audio
-                                                transcribed to text.
+        - `video_url` (str): The URL of the video associated with the dubbed run.
+        - `audio_url` (str): The URL of the audio track used in the dubbed video.
+        - `transcript` (list[TranscriptionResult]): A list of transcription results, each
+            representing a segment of the audio transcribed to text.
     """
 
     video_url:  str
@@ -195,11 +195,11 @@ class ExtendedTranslationData(BasicTranslationData, total=False):
     Extends BasicTranslationData with optional parameters for a more customized translation request.
 
     Attributes:
-        - `age` (Optional[int]): The age of the text's intended audience. Used to tailor the
+        - `age` (int, Optional): The age of the text's intended audience. Used to tailor the
                                translation.
-        - `formality` (Optional[int]): The formality level of the translation. Can be informal or
+        - `formality` (int, Optional): The formality level of the translation. Can be informal or
                                      formal.
-        - `gender` (Optional[int]): The gender of the text's intended audience. Used to adjust the
+        - `gender` (int, Optional): The gender of the text's intended audience. Used to adjust the
                                   translation accordingly.
     """
 
@@ -244,17 +244,17 @@ class ExtendedTranslationTTSData(BasicTranslationTTSData, total=False):
     Extends BasicTranslationTTSData with optional attributes for more detailed TTS customization.
 
     This class builds upon `BasicTranslationTTSData` by introducing additional optional attributes
-    that allow for more granular control over the Text-to-Speech (TTS) output. These attributes
-    include age, formality, and gender, enabling users to tailor the TTS voice to better suit the
-    context or audience of the translation.
+    that allow for more granular control over the Text-to-Speech (TTS) output.\\
+    These attributes include age, formality, and gender, enabling users to tailor the TTS voice to
+    better suit the context or audience of the translation.
 
     Attributes:
-        - `age` (Optional[int]): Specifies the desired age group of the TTS voice. This can
+        - `age` (int, Optional): Specifies the desired age group of the TTS voice. This can
             influence the perceived age of the voice in the TTS output.
-        - `formality` (Optional[int]): Indicates the desired level of formality for the TTS voice.
+        - `formality` (int, Optional): Indicates the desired level of formality for the TTS voice.
             This can affect the speaking style, potentially making it more formal or casual
             depending on the value.
-        - `gender` (Optional[int]): Specifies the desired gender of the TTS voice. This allows for
+        - `gender` (int, Optional): Specifies the desired gender of the TTS voice. This allows for
             the selection of a voice that aligns with a specific gender identity.
     """
 
