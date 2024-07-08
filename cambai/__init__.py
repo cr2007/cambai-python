@@ -511,59 +511,6 @@ class CambAI:
         # Return the response data as a list of voice dictionaries
         return response.json()
 
-    # ---------- Dubbing ---------- #
-
-    def start_dubbing(
-        self, /, video_url: str, source_language: int, target_language: int
-    ) -> TaskInfo:
-        """
-        Initiates the dubbing process for a given video from one language to another.
-
-        This method sends a POST request to the API with the video URL and the source and target
-        languages specified by their IDs.
-        On success, it returns information about the dubbing task.
-
-        Args:
-            - `video_url` (str): The URL of the video to be dubbed.
-            - `source_language` (int): The ID of the source language.
-            - `target_language` (int): The ID of the target language.
-
-        Returns:
-            - TaskInfo: A dictionary containing information about the initiated dubbing task, such
-            as task ID and status.
-
-        Raises:
-            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
-            an error message along with the response details and exits the program.
-        """
-
-        # Construct the API endpoint URL for initiating dubbing
-        url: str = self.__create_api_endpoint("end_to_end_dubbing")
-
-        # Set the content type for the request to JSON
-        self.session.headers["Content-Type"] = "application/json"
-
-        # Prepare the data payload for the POST request
-        data: dict = {
-            "video_url": video_url,
-            "source_language": source_language,
-            "target_language": target_language,
-        }
-
-        # Send a POST request with the video URL and language IDs
-        response: requests.Response = self.session.post(url=url, json=data)
-
-        # Check for a successful response (status code 200)
-        if response.status_code != 200:
-            # Print error details and exit if the request was unsuccessful
-            print(f"Error: There was a {response.status_code} error with your POST request.")
-            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
-            print("Kindly fix the issue and try again.")
-            sys.exit(1)
-
-        # Return the response data as a TaskInfo dictionary
-        return response.json()
-
 
     def get_task_status(
         self,
@@ -627,6 +574,63 @@ class CambAI:
 
         # Return the response data as a dictionary
         return response.json()
+
+    # ---------- Dubbing ---------- #
+
+    def start_dubbing(
+        self, /, video_url: str, source_language: int, target_language: int
+    ) -> TaskInfo:
+        """
+        Initiates the dubbing process for a given video from one language to another.
+
+        This method sends a POST request to the API with the video URL and the source and target
+        languages specified by their IDs.
+        On success, it returns information about the dubbing task.
+
+        Args:
+            - `video_url` (str): The URL of the video to be dubbed.
+            - `source_language` (int): The ID of the source language.
+            - `target_language` (int): The ID of the target language.
+
+        Returns:
+            - TaskInfo: A dictionary containing information about the initiated dubbing task, such
+            as task ID and status.
+
+        Raises:
+            - SystemExit: If the API request fails (i.e., does not return a 200 status code), prints
+            an error message along with the response details and exits the program.
+        """
+
+        # Construct the API endpoint URL for initiating dubbing
+        url: str = self.__create_api_endpoint("end_to_end_dubbing")
+
+        # Set the content type for the request to JSON
+        self.session.headers["Content-Type"] = "application/json"
+
+        # Prepare the data payload for the POST request
+        data: dict = {
+            "video_url": video_url,
+            "source_language": source_language,
+            "target_language": target_language,
+        }
+
+        # Send a POST request with the video URL and language IDs
+        response: requests.Response = self.session.post(url=url, json=data)
+
+        # Check for a successful response (status code 200)
+        if response.status_code != 200:
+            # Print error details and exit if the request was unsuccessful
+            print(f"Error: There was a {response.status_code} error with your POST request.")
+            print(f"Response: {response.text if response.status_code == 500 else response.json()}")
+            print("Kindly fix the issue and try again.")
+            sys.exit(1)
+
+        # Return the response data as a TaskInfo dictionary
+        return response.json()
+
+
+    def get_dubbing_status(self, /, task_id: str) -> TaskStatus:
+        return self.get_task_status("dubbing", task_id)
 
 
     def get_dubbed_run_info(self, /, run_id: int) -> DubbedRunInfo:
