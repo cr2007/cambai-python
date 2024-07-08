@@ -9,7 +9,6 @@ repository = "https://github.com/cr2007/cambai"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.32.2"
-python-dotenv = "^1.0.1"
 pydantic = "^2.7.1"
 rich = "^13.7.1"
 tqdm = "^4.66.4"
@@ -18,6 +17,7 @@ tqdm = "^4.66.4"
 pylint = "^3.2.5"
 pytest = "^8.2.2"
 ipykernel = "^6.29.5"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]
