@@ -48,10 +48,11 @@ jobs:
 
       - name: Notify if package was published successfully
         if: success()
+        env:
+          TAG_NAME: ${{ github.ref_name }}
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
           curl \
-            -H $'Title: CambAI v${TAG_NAME} was published on PyPI' \
+            -H $"Title: CambAI v${TAG_NAME} was published on PyPI" \
             -H "Content-Type: text/plain" \
-            -d $'CambAI v${TAG_NAME} was published on PyPI.\\You can find it at https://pypi.org/project/cambai\nStatus: ${{job.status}}' \
+            -d "CambAI v${TAG_NAME} was published on PyPI.\nYou can find it at https://pypi.org/project/cambai\nStatus: ${{job.status}}" \
             ${{ vars.NTFY_GACTIONS_URL }}
