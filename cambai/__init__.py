@@ -630,6 +630,19 @@ class CambAI:
 
 
     def get_dubbing_status(self, /, task_id: str) -> TaskStatus:
+        """
+        Retrieve the status of a dubbing task.
+
+        This method queries the status of a dubbing task by its unique task ID.
+
+        Parameters:
+        - `task_id` (str): The unique identifier for the dubbing task.
+
+        Returns:
+        - TaskStatus: The current status of the dubbing task.
+        """
+
+        # Call the generic get_task_status method with "dubbing" as the task type
         return self.get_task_status("dubbing", task_id)
 
 
