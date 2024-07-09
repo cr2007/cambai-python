@@ -288,13 +288,13 @@ class CambAI:
             )
 
         # Set the base URL for the Camb AI API
-        self.camb_api_url: str = "https://client.camb.ai/apis/"
+        self.__camb_api_url: str = "https://client.camb.ai/apis/"
 
         # Create a new session for making requests
-        self.session: requests.Session = requests.Session()
+        self.__session: requests.Session = requests.Session()
 
         # Set the API key in the session headers
-        self.session.headers = {"x-api-key": api_key}
+        self.__session.headers = {"x-api-key": api_key}
 
 
     def __create_api_endpoint(self, /, endpoint: str) -> str:
@@ -309,7 +309,7 @@ class CambAI:
         """
 
         # Append the provided endpoint to the base URL
-        return self.camb_api_url + endpoint
+        return self.__camb_api_url + endpoint
 
 
     def get_languages(
@@ -341,7 +341,7 @@ class CambAI:
         url: str = self.__create_api_endpoint(f"{language_type}_languages")
 
         # Send a GET request to the constructed URL
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -423,7 +423,7 @@ class CambAI:
         try:
             # Open the file in binary read mode and send the POST request
             with open(file, "rb") as file_resource:
-                response: requests.Response = self.session.post(
+                response: requests.Response = self.__session.post(
                     url=url, files={"file": file_resource}, data=data
                 )
 
@@ -485,7 +485,7 @@ class CambAI:
         url: str = self.__create_api_endpoint("list_voices")
 
         # Send a GET request to the constructed URL
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -562,7 +562,7 @@ class CambAI:
             )
 
         # Send a GET request to the API endpoint
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -605,7 +605,7 @@ class CambAI:
         url: str = self.__create_api_endpoint("end_to_end_dubbing")
 
         # Set the content type for the request to JSON
-        self.session.headers["Content-Type"] = "application/json"
+        self.__session.headers["Content-Type"] = "application/json"
 
         # Prepare the data payload for the POST request
         data: dict = {
@@ -615,7 +615,7 @@ class CambAI:
         }
 
         # Send a POST request with the video URL and language IDs
-        response: requests.Response = self.session.post(url=url, json=data)
+        response: requests.Response = self.__session.post(url=url, json=data)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -671,7 +671,7 @@ class CambAI:
         url: str = self.__create_api_endpoint(f"dubbed_run_info/{run_id}")
 
         # Send a GET request to the API endpoint
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -853,10 +853,10 @@ class CambAI:
             data["age"] = age
 
         # Set the request content type to JSON
-        self.session.headers["Content-Type"] = "application/json"
+        self.__session.headers["Content-Type"] = "application/json"
 
         # Execute the POST request
-        response: requests.Response = self.session.post(url=url, json=data)
+        response: requests.Response = self.__session.post(url=url, json=data)
 
         # Handle unsuccessful request
         if response.status_code != 200:
@@ -910,7 +910,7 @@ class CambAI:
         url: str = self.__create_api_endpoint(f"tts_result/{run_id}")
 
         # Send a GET request to the API endpoint
-        response: requests.Response = self.session.get(url, stream=True)
+        response: requests.Response = self.__session.get(url, stream=True)
 
         # Check for a successful response (status code 200)
         if response.status_code != 200:
@@ -1085,7 +1085,7 @@ class CambAI:
             # Open the audio file in binary read mode
             with open(audio_file, "rb") as audio:
                 # Make a POST request to the API with the audio file and language ID
-                response: requests.Response = self.session.post(
+                response: requests.Response = self.__session.post(
                     url=url,
                     files={"file": audio},  # The audio file to be transcribed
                     data=data,  # Additional data including the language ID
@@ -1159,7 +1159,7 @@ class CambAI:
         url: str = self.__create_api_endpoint(f"transcription_result/{run_id}")
 
         # Perform a GET request to the API endpoint
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         # Check if the response status code indicates a successful request
         if response.status_code != 200:
@@ -1346,7 +1346,7 @@ class CambAI:
         url: str = self.__create_api_endpoint("create_translation")
 
         # Set the content type for the request
-        self.session.headers["Content-Type"] = "application/json"
+        self.__session.headers["Content-Type"] = "application/json"
 
         # Construct the data payload for the POST request
         data: ExtendedTranslationData = {
@@ -1364,7 +1364,7 @@ class CambAI:
             data["gender"] = gender.value
 
         # Send the POST request to the API
-        response: requests.Response = self.session.post(url=url, json=data)
+        response: requests.Response = self.__session.post(url=url, json=data)
 
         # Check for successful response
         if response.status_code != 200:
@@ -1414,7 +1414,7 @@ class CambAI:
         url: str = self.__create_api_endpoint(f"translation_result/{run_id}")
 
         # Send a GET request to the API endpoint and get the response
-        response: requests.Response = self.session.get(url)
+        response: requests.Response = self.__session.get(url)
 
         if response.status_code != 200:
             print(f"Error: There was a {response.status_code} error with your GET request.")
@@ -1603,7 +1603,7 @@ class CambAI:
         url: str = self.__create_api_endpoint("create_translated_tts")
 
         # Set the content type for the request
-        self.session.headers["Content-Type"] = "application/json"
+        self.__session.headers["Content-Type"] = "application/json"
 
         # Prepare the data payload for the POST request
         data: ExtendedTranslationTTSData = {
@@ -1622,7 +1622,7 @@ class CambAI:
             data["gender"] = gender
 
         # Make the POST request to the API endpoint
-        response: requests.Response = self.session.post(url=url, json=data)
+        response: requests.Response = self.__session.post(url=url, json=data)
 
         # Check for successful response
         if response.status_code != 200:
