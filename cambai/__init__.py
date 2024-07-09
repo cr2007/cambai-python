@@ -1111,6 +1111,23 @@ class CambAI:
             sys.exit(1)
 
 
+    def get_transcription_status(self, /, task_id: str) -> TaskStatus:
+        """
+        Retrieve the status of a transcription task.
+
+        This method queries the status of a transcription task by its unique task ID,
+        utilizing the generic get_task_status method with "transcription" as the task type.
+
+        Parameters:
+        - `task_id` (str): The unique identifier for the transcription task.
+
+        Returns:
+        - TaskStatus: The current status of the transcription task.
+        """
+
+        return self.get_task_status("transcription", task_id)
+
+
     def get_transcription_result(
         self, /, run_id: int, *, save_to_file: bool = False
     ) -> list[TranscriptionResult]:
