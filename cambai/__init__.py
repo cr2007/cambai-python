@@ -365,7 +365,7 @@ class CambAI:
     # ---------- Voices ---------- #
 
     def create_custom_voice(
-        self, *, voice_name: str, gender: Gender, age: Optional[int] = 30, file: str
+        self, /, voice_name: str, file: str, gender: Gender, *, age: Optional[int] = 30
     ) -> dict[str, str]:
         """
         Creates a custom voice profile using the provided voice sample.
@@ -413,12 +413,8 @@ class CambAI:
         data: VoiceProperties = {
             "voice_name": voice_name,
             "gender": gender.value,
-            "age": None
+            "age": age
         }
-
-        # If age is provided, add it to the data payload
-        if age is not None:
-            data["age"] = age
 
         try:
             # Open the file in binary read mode and send the POST request
