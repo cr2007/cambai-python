@@ -127,6 +127,11 @@ class TaskStatus(TypedDict):
     run_id: Optional[int]
 
 
+# ---------- Custom Voice Information ---------- #
+
+class CustomVoiceResponse(TypedDict):
+    voice_id: int
+
 # ---------- Transcription Result ---------- #
 
 
@@ -367,7 +372,7 @@ class CambAI:
 
     def create_custom_voice(
         self, /, voice_name: str, file: str, gender: Gender, *, age: Optional[int] = 30
-    ) -> dict[str, str]:
+    ) -> CustomVoiceResponse:
         """
         Creates a custom voice profile using the provided voice sample.
 
