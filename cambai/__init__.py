@@ -167,6 +167,7 @@ class DubbedRunInfo(TypedDict):
             representing a segment of the audio transcribed to text.
     """
 
+    run_id:     int
     video_url:  str
     audio_url:  str
     transcript: list[TranscriptionResult]
@@ -677,8 +678,12 @@ class CambAI:
             print("Kindly fix the issue and try again.")
             sys.exit(1)
 
+        response_data: DubbedRunInfo = response.json()
+
+        response_data["run_id"] = run_id
+
         # Return the response data as a DubbedRunInfo dictionary
-        return response.json()
+        return response_data
 
 
     def dub(
@@ -718,8 +723,8 @@ class CambAI:
             - DubbedRunInfo: A dictionary containing detailed information about the dubbed run.
 
         Raises:
-            APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
-            unavailable after the task completes.
+            - APIError: If the task status is neither "SUCCESS" nor "PENDING", or if the run ID is
+                unavailable after the task completes.
         """
 
         # Initialize variables for the dubbing task status and task ID
@@ -776,6 +781,8 @@ class CambAI:
         # If the run ID is None, raise an APIError
         if task["run_id"] is None:
             raise APIError("Run ID is None")
+
+        print(f"Dubbing Task {task["run_id"]} Completed!")
 
         # Return the dubbed run information
         return self.get_dubbed_run_info(task["run_id"])
