@@ -313,7 +313,7 @@ class CambAI:
 
 
     def get_languages(
-        self, /, language_type: Literal["source", "target"], write_to_file: bool = False
+        self, /, language_type: Literal["source", "target"], *, write_to_file: bool = False
     ) -> list[LanguageOptionsDict]:
         """
         Fetches the available languages from the API based on the language type.
