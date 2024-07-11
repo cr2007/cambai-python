@@ -119,8 +119,8 @@ class TaskStatus(TypedDict):
             - "TIMEOUT": The task timed out before completion.
             - "ERROR": An error occurred during the task.
             - "PAYMENT_REQUIRED": Payment is required to complete the task.
-        - `run_id` (int, Optional): The unique identifier for the task run. It can be None if the task
-          has not started yet.
+        - `run_id` (int, Optional): The unique identifier for the task run. It can be None if the
+            task has not started yet.
     """
 
     status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
