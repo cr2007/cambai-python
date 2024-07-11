@@ -112,14 +112,14 @@ class TaskStatus(TypedDict):
     A TypedDict representing the status of a dubbing task.
 
     Attributes:
-        - status (Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]):
+        - `status` (Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]):
             The status of the dubbing task. It can be one of the following:
             - "SUCCESS": The task completed successfully.
             - "PENDING": The task is still in progress.
             - "TIMEOUT": The task timed out before completion.
             - "ERROR": An error occurred during the task.
             - "PAYMENT_REQUIRED": Payment is required to complete the task.
-        - run_id (int, Optional): The unique identifier for the task run. It can be None if the task
+        - `run_id` (int, Optional): The unique identifier for the task run. It can be None if the task
           has not started yet.
     """
 
@@ -130,6 +130,16 @@ class TaskStatus(TypedDict):
 # ---------- Custom Voice Information ---------- #
 
 class CustomVoiceResponse(TypedDict):
+    """
+    Typed dictionary to represent a custom voice response.
+
+    This TypedDict is used to structure the response data for voice-related queries, ensuring that
+    each response consistently includes a specific set of keys and their associated types.
+
+    Attributes:
+        - `voice_id` (int): An integer representing the unique identifier of a voice.
+    """
+
     voice_id: int
 
 # ---------- Transcription Result ---------- #
@@ -145,10 +155,10 @@ class TranscriptionResult(TypedDict):
     identified speaker.
 
     Attributes:
-        - start (float): The start time of the transcribed segment, in seconds.
-        - end (float): The end time of the transcribed segment, in seconds.
-        - text (str): The transcribed text of the segment.
-        - speaker (str): The identifier for the speaker in the segment.
+        - `start` (float): The start time of the transcribed segment, in seconds.
+        - `end` (float): The end time of the transcribed segment, in seconds.
+        - `text` (str): The transcribed text of the segment.
+        - `speaker` (str): The identifier for the speaker in the segment.
     """
 
     start:   float
