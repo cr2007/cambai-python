@@ -797,7 +797,7 @@ class CambAI:
         if task["run_id"] is None:
             raise APIError("Run ID is None")
 
-        print(f"Dubbing Task {task["run_id"]} Completed!")
+        print(f"Dubbing Task {task['run_id']} Completed!")
 
         # Return the dubbed run information
         return self.get_dubbed_run_info(task["run_id"])
