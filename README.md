@@ -1,6 +1,9 @@
 <!-- omit from toc -->
 # Camb AI API Wrapper
 
+[![PyPI version](https://badge.fury.io/py/cambai.svg)](https://badge.fury.io/py/cambai)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cambai)
+
 This is a Python wrapper for the CambAI API. It is designed to make it easy to interact with the CambAI API from Python.
 
 > [!IMPORTANT]
