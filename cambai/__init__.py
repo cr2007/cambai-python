@@ -1350,8 +1350,8 @@ class CambAI:
             )
 
         # Validate formality, if provided
-        if (formality is not None) and (formality not in {1, 2}):
-            raise ValueError("create_translation: formality must be one of {1, 2}")
+        if (formality is not None) and (formality not in [1, 2]):
+            raise ValueError("create_translation: formality must be either 1 or 2")
 
         # Check if the gender is an instance of the Gender Enum
         if (gender is not None) and (not isinstance(gender, Gender)):
