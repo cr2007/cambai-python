@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/cambai.svg)](https://badge.fury.io/py/cambai)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cambai)
 
-This is a Python wrapper for the CambAI API. It is designed to make it easy to interact with the CambAI API from Python.
+This is a Python wrapper for the [Camb.ai](https://camb.ai) API. It is designed to make it easy to interact with the API from Python.
 
 > [!IMPORTANT]
 > This library is still in active development.
@@ -27,4 +27,4 @@ pip install cambai
 
 ## Usage
 
-Checkout the '[**examples**](./examples/)' directory for examples on how to use the CambAI API Wrapper.
+Checkout the '[**examples**](https://github.com/cr2007/cambai-python/tree/master/examples)' directory for examples on how to use the CambAI API Wrapper.
