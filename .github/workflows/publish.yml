@@ -55,5 +55,5 @@ jobs:
             -H $"Title: CambAI ${TAG_NAME} published on PyPI successfully" \
             -H "X-Tags: package, cambai-python, pypi, publish" \
             -H "Content-Type: text/plain" \
-            -d $'CambAI ${TAG_NAME} was published on PyPI.\nYou can find it at https://pypi.org/project/cambai\nStatus: ${{job.status}}' \
+            -d $"CambAI ${TAG_NAME} was published on PyPI.\nYou can find it at https://pypi.org/project/cambai\nStatus: ${{job.status}}" \
             ${{ vars.NTFY_GACTIONS_URL }}
