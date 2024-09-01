@@ -168,6 +168,7 @@ cython_debug/
 *.wav
 audio_tts/
 audio/
+examples/*.mp4
 *.txt
 *.json
 test.py
