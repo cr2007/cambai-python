@@ -171,4 +171,5 @@ audio/
 examples/*.mp4
 *.txt
 *.json
+!.devcontainer/*.json
 test.py
