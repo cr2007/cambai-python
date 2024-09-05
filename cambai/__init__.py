@@ -97,20 +97,21 @@ class VoiceProperties(TypedDict):
 
 
 class TaskInfo(TypedDict):
-    """
-    Represents the object returned from a task creation.
+	"""
+	Represents the object returned from a task creation.
 
-    Attributes:
-        - task_id (str): A unique identifier for the task.
-    """
+	Attributes:
+		- task_id (str): The unique identifier for the task.
+		- run_id (Optional[int]): The optional run identifier for the task.
+	"""
 
-    task_id: str
-    run_id:  Optional[int]
+	task_id: str
+	run_id:  Optional[int]
 
 
 class TaskStatus(TypedDict):
     """
-    A TypedDict representing the status of a dubbing task.
+    A dictionary type that holds the status information of a task.
 
     Attributes:
         - `status` (Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]):
@@ -122,6 +123,8 @@ class TaskStatus(TypedDict):
             - "PAYMENT_REQUIRED": Payment is required to complete the task.
         - `run_id` (int, Optional): The unique identifier for the task run. It can be None if the
             task has not started yet.
+        - `exception_reason` (str, Optional):
+            The optional reason for an exception if the task failed.
     """
 
     status:           Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
@@ -178,10 +181,10 @@ class DubbedRunInfo(TypedDict):
     transcription results.
 
     Attributes:
-        - `video_url` (str): The URL of the video associated with the dubbed run.
-        - `audio_url` (str): The URL of the audio track used in the dubbed video.
-        - `transcript` (list[TranscriptionResult]): A list of transcription results, each
-            representing a segment of the audio transcribed to text.
+        - `run_id` (int): The unique identifier for the run.
+        - `video_url` (str): The URL of the video.
+        - `audio_url` (str): The URL of the audio.
+        - `transcript` (list[TranscriptionResult]): A list of transcription results.
     """
 
     run_id:     int
@@ -200,7 +203,7 @@ class BasicTranslationData(TypedDict, total=True):
     Attributes:
         - `source_language` (int): The ID of the source language.
         - `target_language` (int): The ID of the target language.
-        - `text` (str): The text to be translated.
+        - `texts` (list[str]): A list of texts to be translated.
     """
 
     source_language: int
@@ -231,7 +234,7 @@ class TranslationResult(TypedDict):
     Represents the result of a translation operation.
 
     Attributes:
-        - `text` (str): The translated text.
+        `texts` (list[str]): A list of translated texts.
     """
 
     texts: list[str]
@@ -244,14 +247,11 @@ class BasicTranslationTTSData(TypedDict, total=True):
     """
     Represents the data model for basic translation with Text-to-Speech (TTS) information.
 
-    This class extends `BasicTranslationData` by including TTS-specific information, such as the
-    voice ID used for the TTS output.\\
-    It is designed to be used in scenarios where translation output needs to be synthesized into
-    speech, requiring a specific voice.
-
     Attributes:
-        - `voice_id` (int): An identifier for the voice to be used in TTS synthesis. This ID
-        corresponds to a specific voice in the TTS system.
+        - `text` (str): The text to be translated and converted to speech.
+        - `voice_id` (int): The identifier for the voice to be used in TTS.
+        - `source_language` (int): The language code of the source language.
+        - `target_language` (int): The language code of the target language.
     """
 
     text:            str
@@ -1318,24 +1318,31 @@ class CambAI:
         It returns the response in JSON format.
 
         Parameters:
-            - `source_language` (int): The ID of the source language.
-            - `target_language` (int): The ID of the target language.
-            - `text` (str): The text to be translated.
-            - `age` (int): The age of the text's intended audience.
-            - `formality` (int, optional): The formality level of the translation, if applicable.
-            - `gender` (Gender, optional): The gender of the text's intended audience, if applicable
-
-        Returns:
-            - dict[str, str]: The response from the translation API in JSON format.
+            - `text` (list[str]):
+                A list of texts to be translated.
+            - source_language (int):
+                The language code of the source language.
+            - target_language (int):
+                The language code of the target language.
+            - age (int):
+                The age of the user for whom the translation is being created.
+            - formality (Optional[int], optional):
+                The formality level of the translation. Must be either 1 or 2. Defaults to None.
+            - gender (Optional[Gender], optional):
+                The gender for the translation. Must be an instance of the Gender Enum. Defaults to
+                None.
 
         Raises:
-            - ValueError: If any of the language IDs or formality values are out of their valid
-                          range.
+            - ValueError:
+                If the source_language or target_language is not within the valid range.
+            - ValueError:
+                If the formality is not 1 or 2.
+            - TypeError:
+                If the gender is not an instance of the Gender Enum.
 
-        Note:
-            - The `source_language` and `target_language` IDs must be within the valid range.
-            - The `formality` parameter, if provided, must be either 1 or 2.
-            - The `gender` parameter, if provided, must be an instance of the `Gender` enum.
+        Returns:
+            - TaskInfo:
+                A dictionary containing information about the created translation task.
         """
 
         # Validate source language ID
@@ -1459,19 +1466,19 @@ class CambAI:
 
 
     def translate(
-        self,
-        /,
-        text: list[str],
-        source_language: int,
-        target_language: int,
-        age: int,
-        *,
-        formality: Optional[int] = None,
-        gender: Optional[Gender] = None,
-        polling_interval: float = 10,
-        save_to_file: bool = False,
-        debug: bool = False,
-    ) -> TranslationResult:
+            self,
+            /,
+            text: list[str],
+            source_language: int,
+            target_language: int,
+            age: int,
+            *,
+            formality: Optional[int] = None,
+            gender: Optional[Gender] = None,
+            polling_interval: float = 10,
+            save_to_file: bool = False,
+            debug: bool = False,
+        ) -> TranslationResult:
         """
         Translates text from a source language to a target language, with optional parameters to
         customize the request.
@@ -1483,24 +1490,26 @@ class CambAI:
         It also allows for the result to be saved to a file if desired.
 
         Parameters:
-            - `text` (str): The text to be translated.
+            - `text` (list[str]): A list of texts to be translated.
             - `source_language` (int): The language code of the source text.
             - `target_language` (int): The language code for the translation output.
             - `age` (int): Age parameter to customize the translation request.
             - `formality` (int, optional): Optional formality level for the translation.
-            - `gender` (Gender, optional): Optional gender to customize the translation request.
-            - `polling_interval` (float): Time in seconds between status checks of the translation
-                task. Defaults to 10.
-            - `save_to_file` (bool): Flag to save the translation output as a file. Defaults to
+            - `gender` (Gender, optional): The gender for the translation. Must be an instance of
+                the Gender Enum.
+            - `polling_interval` (float, optional): The interval in seconds to wait before polling
+                the task status again. Defaults to 10.
+            - `save_to_file` (bool, optional): Flag to save the translation output as a file. Defaults to
                 False.
-            - `debug` (bool): Enables detailed logging if set to True. Defaults to False.
-
-        Returns:
-            - TranslationResult: The result of the translation process, including any file
-                information if saved.
+            - `debug` (bool, optional): Enables detailed logging if set to True. Defaults to False.
 
         Raises:
-            - APIError: If the task fails or if there is an issue retrieving the result.
+            - APIError:
+                If the translation task fails or the run ID is None.
+
+        Returns:
+            - TranslationResult:
+                A dictionary containing the translated texts.
         """
 
         task: TaskStatus
