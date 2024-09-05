@@ -105,6 +105,7 @@ class TaskInfo(TypedDict):
     """
 
     task_id: str
+    run_id:  Optional[int]
 
 
 class TaskStatus(TypedDict):
@@ -123,8 +124,9 @@ class TaskStatus(TypedDict):
             task has not started yet.
     """
 
-    status: Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
-    run_id: Optional[int]
+    status:           Literal["SUCCESS", "PENDING", "TIMEOUT", "ERROR", "PAYMENT_REQUIRED"]
+    run_id:           Optional[int]
+    exception_reason: Optional[str]
 
 
 # ---------- Custom Voice Information ---------- #
@@ -203,7 +205,7 @@ class BasicTranslationData(TypedDict, total=True):
 
     source_language: int
     target_language: int
-    text:            str
+    texts:           list[str]
 
 
 class ExtendedTranslationData(BasicTranslationData, total=False):
@@ -232,7 +234,7 @@ class TranslationResult(TypedDict):
         - `text` (str): The translated text.
     """
 
-    text: str
+    texts: list[str]
 
 
 # ---------- Translation TTS Information ---------- #
@@ -1297,7 +1299,7 @@ class CambAI:
     def create_translation(
         self,
         /,
-        text: str,
+        text: list[str],
         source_language: int,
         target_language: int,
         age: int,
@@ -1370,7 +1372,7 @@ class CambAI:
         data: ExtendedTranslationData = {
             "source_language": source_language,
             "target_language": target_language,
-            "text": text,
+            "texts": text,
         }
 
         # Add optional parameters to the payload, if provided
@@ -1447,7 +1449,8 @@ class CambAI:
                     "Camb AI Translation Result\n",
                     f"Run ID: {run_id}\n"
                 ])
-                file.write(response.json()["text"])
+                for line in response.json()["texts"]:
+                    file.write(f"{line}\n")
 
         return response.json()
 
@@ -1455,7 +1458,7 @@ class CambAI:
     def translate(
         self,
         /,
-        text: str,
+        text: list[str],
         source_language: int,
         target_language: int,
         age: int,
@@ -1504,7 +1507,12 @@ class CambAI:
 
         # Initiate the translation task with the provided parameters
         response = self.create_translation(
-            text, source_language, target_language, age, formality=formality, gender=gender
+            text,
+            source_language,
+            target_language,
+            age,
+            formality=formality,
+            gender=gender
         )
 
         print(f"Translation Task Started: {response}")
