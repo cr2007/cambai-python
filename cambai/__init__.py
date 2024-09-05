@@ -55,9 +55,9 @@ class Gender(IntEnum):
     - NOT_APPLICABLE (int): Gender is not applicable.
     """
 
-    NOT_KNOWN = 0
-    MALE = 1
-    FEMALE = 2
+    NOT_KNOWN      = 0
+    MALE           = 1
+    FEMALE         = 2
     NOT_APPLICABLE = 9
 
 
@@ -240,7 +240,7 @@ class TranslationResult(TypedDict):
 # ---------- Translation TTS Information ---------- #
 
 
-class BasicTranslationTTSData(BasicTranslationData, total=True):
+class BasicTranslationTTSData(TypedDict, total=True):
     """
     Represents the data model for basic translation with Text-to-Speech (TTS) information.
 
@@ -254,7 +254,10 @@ class BasicTranslationTTSData(BasicTranslationData, total=True):
         corresponds to a specific voice in the TTS system.
     """
 
-    voice_id: int
+    text:            str
+    voice_id:        int
+    source_language: int
+    target_language: int
 
 
 class ExtendedTranslationTTSData(BasicTranslationTTSData, total=False):
