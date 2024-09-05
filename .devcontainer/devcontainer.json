@@ -1,0 +1,45 @@
+{
+	"name": "Camb AI Python Client - Dev Container",
+	"image": "mcr.microsoft.com/devcontainers/python:3",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"eamodio.gitlens",
+				"usernamehw.errorlens",
+				"mikestead.dotenv",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"njpwerner.autodocstring",
+				"GitHub.copilot",
+				"vscode-icons-team.vscode-icons",
+				"zeshuaro.vscode-python-poetry",
+				"tamasfe.even-better-toml",
+				"aaron-bond.better-comments"
+			],
+			"settings": {
+				"workbench.colorTheme": "Default Dark Modern",
+				"workbench.iconTheme": "vscode-icons",
+				"editor.stickyScroll.enabled": true,
+				"editor.bracketPairColorization.enabled": true,
+				"python.analysis.typeCheckingMode": "basic",
+				"python.analysis.inlayHints.callArgumentNames": "all",
+				"[python]": { "editor.rulers": [100] },
+				"files.trimTrailingWhitespace": true,
+				"editor.wordWrap": "on",
+				"git.autofetch": true,
+				"diffEditor.ignoreTrimWhitespace": false,
+				"diffEditor.hideUnchangedRegions.enabled": true,
+				"[yaml, yml]": {
+					"editor.insertSpaces": true,
+					"editor.tabSize": 2,
+					"editor.autoIndent": "advanced",
+					"diffEditor.ignoreTrimWhitespace": false
+				},
+				"editor.inlayHints.enabled": "on"
+			}
+		}
+	},
+
+	// Setup Poetry and install dependencies
+	"postStartCommand": "bash ./.devcontainer/setup.sh"
+}
