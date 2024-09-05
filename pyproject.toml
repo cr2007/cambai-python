@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cambai"
-version = "0.1.6"
+version = "0.1.7"
 description = "Camb AI API Python Library"
 authors = ["Chandrashekhar R <hi.cskhere@gmail.com>"]
 readme = "README.md"
