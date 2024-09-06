@@ -97,16 +97,16 @@ class VoiceProperties(TypedDict):
 
 
 class TaskInfo(TypedDict):
-	"""
-	Represents the object returned from a task creation.
+    """
+    Represents the object returned from a task creation.
 
-	Attributes:
-		- task_id (str): The unique identifier for the task.
-		- run_id (Optional[int]): The optional run identifier for the task.
-	"""
+    Attributes:
+        - task_id (str): The unique identifier for the task.
+        - run_id (Optional[int]): The optional run identifier for the task.
+    """
 
-	task_id: str
-	run_id:  Optional[int]
+    task_id: str
+    run_id:  Optional[int]
 
 
 class TaskStatus(TypedDict):
@@ -1499,8 +1499,8 @@ class CambAI:
                 the Gender Enum.
             - `polling_interval` (float, optional): The interval in seconds to wait before polling
                 the task status again. Defaults to 10.
-            - `save_to_file` (bool, optional): Flag to save the translation output as a file. Defaults to
-                False.
+            - `save_to_file` (bool, optional): Flag to save the translation output as a file.
+                Defaults to False.
             - `debug` (bool, optional): Enables detailed logging if set to True. Defaults to False.
 
         Raises:
