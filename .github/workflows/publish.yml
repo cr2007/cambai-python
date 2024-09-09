@@ -52,6 +52,7 @@ jobs:
           curl \
             -H $"Title: CambAI ${{ github.ref_name }} published on PyPI successfully" \
             -H "X-Tags: package, cambai-python, pypi, publish" \
+            -H "Actions: view, Open PyPI page, https://pypi.org/project/cambai" \
             -H "Content-Type: text/plain" \
             -d $'CambAI ${{ github.ref_name }} was published on PyPI.\nYou can find it at https://pypi.org/project/cambai\nStatus: ${{job.status}}' \
             ${{ vars.NTFY_GACTIONS_URL }}
