@@ -41,5 +41,5 @@
 	},
 
 	// Setup Poetry and install dependencies
-	"postStartCommand": "bash ./.devcontainer/setup.sh"
+	"postStartCommand": "chmod +x ./.devcontainer/setup.sh && bash ./.devcontainer/setup.sh"
 }
