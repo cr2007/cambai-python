@@ -12,5 +12,8 @@ if ! poetry --version; then
     exit 1
 fi
 
+# Add the Poetry Shell interface
+poetry self add poetry-plugin-shell
+
 # Install dependencies
 poetry install
